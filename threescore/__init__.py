@@ -129,6 +129,14 @@ class Board:
           c += 1
     return c
 
+  def max_card(self):
+    card = -1
+    for i in range(BOARD_SIZE):
+      for j in range(BOARD_SIZE):
+        if self.cells[i][j].has_card():
+          card = max(card, self.cells[i][j].card)
+    return card
+
   def __eq__(self, other):
     if isinstance(other, Board):
         return self.cells == other.cells
@@ -179,17 +187,17 @@ class Deck:
 
 class BonusCards:
 
-  def __init__(self, max_card_val):
-    self.max_card_val = max_card_val
+  def __init__(self, max_card):
+    self.max_card = max_card
 
   def is_active(self):
-    return self.max_card_val >= 48
+    return self.max_card >= 48
 
   def use_bonus_card(self):
     return random.random() < BONUS_CARD_CHANCE
 
   def get_active_bonus_cards(self):
-    max_bonus_card = self.max_card_val // 8
+    max_bonus_card = self.max_card // 8
 
     def _gen():
       c = 6
@@ -198,44 +206,75 @@ class BonusCards:
         c *= 2
     return list(_gen())
 
-  def next(self):
+  def gen_candidate_cards(self):
     assert self.is_active()
 
     cards = self.get_active_bonus_cards()
-    return random.choice(cards)
+    n = min(len(cards), 3)
+    return random.sample(cards, n)
 
-  def update(self, max_card_val):
-    self.max_card_val = max_card_val
+  def update(self, max_card):
+    self.max_card = max_card
+
+
+class NextCard:
+
+  def __init__(self, board):
+    self.board = board
+    self.deck = Deck()
+    self.bonus_cards = BonusCards(board.max_card())
+    self.candidate_cards = None
+
+  def peek(self):
+    if self.candidate_cards is not None:
+      return self.candidate_cards
+
+    max_card = self.board.max_card()
+    self.bonus_cards.update(max_card)
+
+    if self.bonus_cards.is_active() and self.bonus_cards.use_bonus_card():
+      self.candidate_cards = self.bonus_cards.gen_candidate_cards()
+    else:
+      self.candidate_cards = [self.deck.next()]
+    return self.candidate_cards
+
+  def next(self):
+    candidate_cards = self.peek()
+    self.candidate_cards = None
+    return random.choice(candidate_cards)
+
 
 class ThreesGame:
 
-  def __init__(self):
-    self.board = None
-    self.deck = None
-    self.bonus_cards = None
+  def __init__(self, board=None):
+    self.board = board
+    self.next_card = None
 
   def reset(self):
     self.board = Board()
-    self.deck = Deck()
-    self.bonus_cards = BonusCards(0)
-
+    self.next_card = NextCard(self.board)
     self._fill_initial_board()
 
   def done(self):
-    return self.board.count_card() == (BOARD_SIZE * BOARD_SIZE)
+    """Game is over if all four move directions are dead."""
+    for dir in list(MoveDirection):
+      _, dropin_positions = self.board.move(dir)
+      if dropin_positions:
+        return False
+    return True
+
+  def peek(self):
+    return self.board, self.next_card.peek()
 
   def move(self, direction: MoveDirection):
     new_board, dropin_positions = self.board.move(direction)
     if not dropin_positions:
       return False
 
-    if self.bonus_cards.is_active() and self.bonus_cards.use_bonus_card():
-      card = self.bonus_cards.next()
-    else:
-      card = self.deck.next()
-
+    new_card = self.next_card.next()
     pos = random.choice(dropin_positions)
-    new_board.put(*pos, card)
+    new_board.put(*pos, new_card)
+
     self.board = new_board
     return True
 
@@ -245,13 +284,5 @@ class ThreesGame:
     positions = random.sample(positions, INITIAL_CARD_NUM)
 
     for i, j in positions:
-      card = self.deck.next()
+      card = self.next_card.next()
       self.board.put(i, j, card)
-
-
-  def __repr__(self):
-    board = str(self.board)
-    deck_card = self.deck.peek()
-    return board + "\n" + f"Deck: {deck_card}"
-
-

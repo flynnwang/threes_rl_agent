@@ -1,6 +1,6 @@
 
 from threescore import (Board, BonusCards, Cell, Deck, MoveDirection,
-                        ThreesGame, BOARD_SIZE)
+                        ThreesGame, BOARD_SIZE, NextCard)
 
 
 def test_bonus_card_not_active():
@@ -211,6 +211,9 @@ def test_game_move_by_deck():
     def is_active(self):
       return False
 
+    def update(self, card):
+      self.max_card = card
+
   cells = [
     [0, 1, 3, 2],
     [3, 2, 1, 0],
@@ -218,10 +221,14 @@ def test_game_move_by_deck():
     [0, 0, 3, 0],
   ]
 
+  board = Board(make_board(cells))
+  next_card = NextCard(board)
+  next_card.deck = MockDeck()
+  next_card.bonus_cards = MockBonusCard()
+
   game = ThreesGame()
-  game.board = Board(make_board(cells))
-  game.deck = MockDeck()
-  game.bonus_cards = MockBonusCard()
+  game.board = board
+  game.next_card = next_card
 
   game.move(MoveDirection.DOWN)
 
@@ -236,6 +243,8 @@ def test_game_move_by_deck():
     for j in range(BOARD_SIZE):
       assert game.board.cells[i][j] == expected_board.cells[i][j]
 
+  assert game.board.max_card() == 6
+
   diff_count = 0
   dropin_card = -1
   for j in range(BOARD_SIZE):
@@ -244,4 +253,40 @@ def test_game_move_by_deck():
       dropin_card = game.board.cells[0][j].card
   assert diff_count == 1
   assert dropin_card == 6
+
+
+def test_game_done_false():
+  cells = [
+    [0, 2, 0, 0],
+    [0, 1, 3, 2],
+    [3, 2, 1, 0],
+    [3, 1, 6, 0],
+  ]
+  board = Board(make_board(cells))
+  game = ThreesGame(board)
+  assert not game.done()
+
+
+def test_game_done_true():
+  cells = [
+    [3, 1, 6, 12],
+    [2, 6, 1, 24],
+    [2, 12, 192, 6],
+    [48, 768, 48, 12],
+  ]
+  board = Board(make_board(cells))
+  game = ThreesGame(board)
+  assert game.done()
+
+
+def test_game_done_true2():
+  cells = [
+    [3, 384, 192, 2],
+    [2, 48, 96, 48],
+    [6, 12, 6, 24],
+    [1, 1, 1, 3],
+  ]
+  board = Board(make_board(cells))
+  game = ThreesGame(board)
+  assert game.done()
 
