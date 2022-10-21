@@ -3,10 +3,19 @@ from enum import Enum, auto
 
 
 BOARD_SIZE = 4
+MAX_CANDIDATE_CARDS_NUM = 3
 
 INITIAL_CARD_NUM = 9
 
 BONUS_CARD_CHANCE = 1. / 21.
+
+NUM_ACTIONS = 4
+
+class MoveDirection(Enum):
+  LEFT = auto()
+  RIGHT = auto()
+  UP = auto()
+  DOWN = auto()
 
 
 class Cell:
@@ -55,13 +64,6 @@ def copy_board(cells):
   return [[Cell(cells[i][j].card)
            for j in range(BOARD_SIZE)]
            for i in range(BOARD_SIZE)]
-
-
-class MoveDirection(Enum):
-  LEFT = auto()
-  RIGHT = auto()
-  UP = auto()
-  DOWN = auto()
 
 
 class Board:
@@ -137,6 +139,9 @@ class Board:
           card = max(card, self.cells[i][j].card)
     return card
 
+  def get_card(self, x, y):
+    return self.cells[x][y].card
+
   def __eq__(self, other):
     if isinstance(other, Board):
         return self.cells == other.cells
@@ -210,7 +215,7 @@ class BonusCards:
     assert self.is_active()
 
     cards = self.get_active_bonus_cards()
-    n = min(len(cards), 3)
+    n = min(len(cards), MAX_CANDIDATE_CARDS_NUM)
     return random.sample(cards, n)
 
   def update(self, max_card):
