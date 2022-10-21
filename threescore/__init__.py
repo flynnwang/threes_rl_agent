@@ -286,3 +286,21 @@ class ThreesGame:
     for i, j in positions:
       card = self.next_card.next()
       self.board.put(i, j, card)
+
+  def display(self):
+    max_card = self.board.max_card()
+    width = len(str(abs(max_card)))
+    fmt = "{0: <%s}" % width
+
+    if self.done():
+        print("DONE :P")
+    print(f"Next card(s): {self.next_card.peek()}")
+    for i in range(BOARD_SIZE):
+      for j in range(BOARD_SIZE):
+        c = self.board.cells[i][j]
+        if c.has_card():
+          print(fmt.format(c.card), end='')
+        else:
+          print('_' * width, end='')
+        print('  ', end='')
+      print()
