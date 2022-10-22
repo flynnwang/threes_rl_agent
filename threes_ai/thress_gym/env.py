@@ -5,8 +5,8 @@ import gym
 import numpy as np
 from gym import spaces
 
-from threescore.consts import *
-from threescore import ThreesGame
+from threes.consts import *
+from threes import ThreesGame
 
 
 ACTION_TO_DIRECTION = dict(enumerate(list(MoveDirection)))
