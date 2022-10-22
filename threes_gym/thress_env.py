@@ -5,18 +5,13 @@ import gym
 import numpy as np
 from gym import spaces
 
-from threescore import (BOARD_SIZE, MAX_CANDIDATE_CARDS_NUM, NUM_ACTIONS,
-                        MoveDirection, ThreesGame)
+from threescore.consts import *
+from threescore import ThreesGame
 
-# Total number of cards + an empty card
 
 ACTION_TO_DIRECTION = dict(enumerate(list(MoveDirection)))
 
-N_WHITE_CARD = 12
-CARDS = [0, 1, 2] + [3 * (2**i) for i in range(N_WHITE_CARD)]
 CARD_TO_STATE = dict((c, i) for i, c in enumerate(CARDS))
-
-TOTAL_STATE_NUM = len(CARDS) # 15
 
 
 class ThreesEnv(gym.Env):

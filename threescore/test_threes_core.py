@@ -1,6 +1,7 @@
 
-from threescore import (Board, BonusCards, Cell, Deck, MoveDirection,
-                        ThreesGame, BOARD_SIZE, NextCard)
+from threescore.core import (Board, BonusCards, Cell, Deck,
+                             ThreesGame, NextCard)
+from threescore.consts import *
 
 
 def test_bonus_card_not_active():
