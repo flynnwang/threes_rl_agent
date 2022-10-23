@@ -4,7 +4,7 @@ import gym
 import numpy as np
 from gym import spaces
 
-from threes.consts import *
+from threes_ai.threes.consts import *
 
 
 class ModelInputWrapper(gym.ObservationWrapper):

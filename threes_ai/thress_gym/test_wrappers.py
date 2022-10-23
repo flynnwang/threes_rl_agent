@@ -1,9 +1,9 @@
 
 import numpy as np
 
-from .wrappers import ModelInputWrapper
+from threes_ai.thress_gym.wrappers import ModelInputWrapper
+from threes_ai.threes.consts import *
 from .env import ThreesEnv
-from threes.consts import *
 
 def test_model_input_wrapper():
   wrapper = ModelInputWrapper(None)
