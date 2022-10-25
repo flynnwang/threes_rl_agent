@@ -205,7 +205,10 @@ class BonusCards:
 
     cards = self.get_active_bonus_cards()
     n = min(len(cards), MAX_CANDIDATE_CARDS_NUM)
-    return random.sample(cards, n)
+
+    candidate_cards = random.sample(cards, n)
+    candidate_cards.sort()
+    return candidate_cards
 
   def update(self, max_card):
     self.max_card = max_card
@@ -230,6 +233,7 @@ class NextCard:
       self.candidate_cards = self.bonus_cards.gen_candidate_cards()
     else:
       self.candidate_cards = [self.deck.next()]
+
     return self.candidate_cards
 
   def next(self):

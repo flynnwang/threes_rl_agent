@@ -23,8 +23,8 @@ class ThreesEnv(gym.Env):
 
     # For each board position, the state could be one of the card or empty.
     # Same as the candidate card positions.
-    board_space = np.ones((BOARD_SIZE, BOARD_SIZE)) * TOTAL_STATE_NUM
-    candidate_cards_space = np.ones(MAX_CANDIDATE_CARDS_NUM) * TOTAL_STATE_NUM
+    board_space = np.zeros((BOARD_SIZE, BOARD_SIZE)) + TOTAL_STATE_NUM
+    candidate_cards_space = np.zeros(MAX_CANDIDATE_CARDS_NUM) + TOTAL_STATE_NUM
     self.observation_space = spaces.Dict({
       "board": spaces.MultiDiscrete(board_space),
       "candidate_cards": spaces.MultiDiscrete(candidate_cards_space)
