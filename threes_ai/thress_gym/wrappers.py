@@ -36,9 +36,7 @@ class ModelInputWrapper(gym.ObservationWrapper):
       "is_white_card": spaces.MultiBinary((1, BOARD_SIZE, BOARD_SIZE)),
 
       # candidate card channels.
-      "candidate_card_1": spaces.MultiDiscrete(board_space),
-      "candidate_card_2": spaces.MultiDiscrete(board_space),
-      "candidate_card_3": spaces.MultiDiscrete(board_space),
+      "candidate_board": spaces.MultiDiscrete(board_space),
     })
 
   def observation(self, obs):
@@ -53,18 +51,14 @@ class ModelInputWrapper(gym.ObservationWrapper):
     is_white_card = torch.zeros(self.board_shape, dtype=int)
     is_white_card[0, :, :] = (board >= 3).to(int)
 
-    candidate_cards = torch.from_numpy(obs['candidate_cards'])
-    def make_candidate_card_at(i):
-      c = torch.zeros(self.board_shape, dtype=int)
-      c[0, :, :] = candidate_cards[i]
-      return c
+    candidate_cards = obs['candidate_cards']
+    candidate_board = torch.zeros(self.board_shape, dtype=int)
+    for i, card in enumerate(candidate_cards):
+      candidate_board[0, i, :] = card
 
     return {
       "card_type": card_type,
       "card_weight": card_weight,
       "is_white_card": is_white_card,
-
-      "candidate_card_1": make_candidate_card_at(0),
-      "candidate_card_2": make_candidate_card_at(1),
-      "candidate_card_3": make_candidate_card_at(2),
+      "candidate_board": candidate_board,
     }

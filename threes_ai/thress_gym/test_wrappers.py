@@ -1,4 +1,5 @@
 
+import torch
 import numpy as np
 
 from threes_ai.thress_gym.wrappers import ModelInputWrapper
@@ -33,3 +34,9 @@ def test_model_input_wrapper():
   assert is_white_card[0, 1, 1] == 0
   assert is_white_card[0, 3, 0] == 1
   assert is_white_card[0, 2, 3] == 1
+
+  cb = obs['candidate_board']
+  assert cb.shape == (1, 4, 4)
+  assert torch.allclose(cb[0, 0, :],  torch.tensor([3]))
+  assert torch.allclose(cb[0, 1, :],  torch.tensor([7]))
+  assert torch.allclose(cb[0, 2, :],  torch.tensor([2]))
