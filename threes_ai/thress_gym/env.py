@@ -1,4 +1,3 @@
-
 import random
 
 import gym
@@ -7,7 +6,6 @@ from gym import spaces
 
 from threes_ai.threes.consts import *
 from threes_ai.threes import ThreesGame
-
 
 ACTION_TO_DIRECTION = dict(enumerate(list(MoveDirection)))
 
@@ -26,8 +24,10 @@ class ThreesEnv(gym.Env):
     board_space = np.zeros((BOARD_SIZE, BOARD_SIZE)) + TOTAL_STATE_NUM
     candidate_cards_space = np.zeros(MAX_CANDIDATE_CARDS_NUM) + TOTAL_STATE_NUM
     self.observation_space = spaces.Dict({
-      "board": spaces.MultiDiscrete(board_space),
-      "candidate_cards": spaces.MultiDiscrete(candidate_cards_space)
+        "board":
+        spaces.MultiDiscrete(board_space),
+        "candidate_cards":
+        spaces.MultiDiscrete(candidate_cards_space)
     })
 
     # LEFT/RIGHT/UP/DOWN

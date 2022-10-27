@@ -1,6 +1,4 @@
-
-from .core import (Board, BonusCards, Cell, Deck,
-                             ThreesGame, NextCard)
+from .core import (Board, BonusCards, Cell, Deck, ThreesGame, NextCard)
 from .consts import *
 
 
@@ -52,10 +50,8 @@ def test_deck_auto_refill():
 
 
 def make_board(cells):
-  return [[Cell(cells[i][j])
-           for j in range(BOARD_SIZE)]
+  return [[Cell(cells[i][j]) for j in range(BOARD_SIZE)]
           for i in range(BOARD_SIZE)]
-
 
 
 def _check_move(b, dir, moved_cells, expected_idx):
@@ -72,47 +68,45 @@ def _check_move(b, dir, moved_cells, expected_idx):
 
 def test_board_move_case1():
   cells = [
-    [2, 0, 0, 2],
-    [0, 0, 3, 2],
-    [1, 0, 1, 3],
-    [0, 0, 1, 3],
+      [2, 0, 0, 2],
+      [0, 0, 3, 2],
+      [1, 0, 1, 3],
+      [0, 0, 1, 3],
   ]
   b = Board(make_board(cells))
 
-
   cells = [
-    [2, 0, 3, 2],
-    [1, 0, 1, 2],
-    [0, 0, 1, 6],
-    [0, 0, 0, 0],
+      [2, 0, 3, 2],
+      [1, 0, 1, 2],
+      [0, 0, 1, 6],
+      [0, 0, 0, 0],
   ]
   tail_idx = [(3, 0), (3, 1), (3, 2), (3, 3)]
   _check_move(b, MoveDirection.UP, cells, tail_idx)
 
   cells = [
-    [0, 0, 0, 0],
-    [2, 0, 3, 2],
-    [0, 0, 1, 2],
-    [1, 0, 1, 6],
+      [0, 0, 0, 0],
+      [2, 0, 3, 2],
+      [0, 0, 1, 2],
+      [1, 0, 1, 6],
   ]
   tail_idx = [(0, 0), (0, 1), (0, 2), (0, 3)]
   _check_move(b, MoveDirection.DOWN, cells, tail_idx)
 
-
   cells = [
-    [2, 0, 2, 0],
-    [0, 3, 2, 0],
-    [1, 1, 3, 0],
-    [0, 1, 3, 0],
+      [2, 0, 2, 0],
+      [0, 3, 2, 0],
+      [1, 1, 3, 0],
+      [0, 1, 3, 0],
   ]
   tail_idx = [(0, 3), (1, 3), (2, 3), (3, 3)]
   _check_move(b, MoveDirection.LEFT, cells, tail_idx)
 
   cells = [
-    [0, 2, 0, 2],
-    [0, 0, 3, 2],
-    [0, 1, 1, 3],
-    [0, 0, 1, 3],
+      [0, 2, 0, 2],
+      [0, 0, 3, 2],
+      [0, 1, 1, 3],
+      [0, 0, 1, 3],
   ]
   tail_idx = [(0, 0), (1, 0), (2, 0), (3, 0)]
   _check_move(b, MoveDirection.RIGHT, cells, tail_idx)
@@ -120,18 +114,18 @@ def test_board_move_case1():
 
 def test_board_move_up():
   cells = [
-    [0, 0, 1, 3],
-    [0, 0, 0, 0],
-    [3, 2, 0, 1],
-    [1, 2, 1, 3],
+      [0, 0, 1, 3],
+      [0, 0, 0, 0],
+      [3, 2, 0, 1],
+      [1, 2, 1, 3],
   ]
   b = Board(make_board(cells))
 
   cells = [
-    [0, 0, 1, 3],
-    [3, 2, 0, 1],
-    [1, 2, 1, 3],
-    [0, 0, 0, 0],
+      [0, 0, 1, 3],
+      [3, 2, 0, 1],
+      [1, 2, 1, 3],
+      [0, 0, 0, 0],
   ]
   tail_idx = [(3, 0), (3, 1), (3, 2), (3, 3)]
   _check_move(b, MoveDirection.UP, cells, tail_idx)
@@ -139,18 +133,18 @@ def test_board_move_up():
 
 def test_board_move_left():
   cells = [
-    [0, 0, 1, 3],
-    [3, 2, 0, 1],
-    [1, 2, 1, 3],
-    [0, 0, 0, 3],
+      [0, 0, 1, 3],
+      [3, 2, 0, 1],
+      [1, 2, 1, 3],
+      [0, 0, 0, 3],
   ]
   b = Board(make_board(cells))
 
   cells = [
-    [0, 1, 3, 0],
-    [3, 2, 1, 0],
-    [3, 1, 3, 0],
-    [0, 0, 3, 0],
+      [0, 1, 3, 0],
+      [3, 2, 1, 0],
+      [3, 1, 3, 0],
+      [0, 0, 3, 0],
   ]
   tail_idx = [(0, 3), (1, 3), (2, 3), (3, 3)]
   _check_move(b, MoveDirection.LEFT, cells, tail_idx)
@@ -158,18 +152,18 @@ def test_board_move_left():
 
 def test_board_move_down():
   cells = [
-    [0, 1, 3, 2],
-    [3, 2, 1, 0],
-    [3, 1, 3, 0],
-    [0, 0, 3, 0],
+      [0, 1, 3, 2],
+      [3, 2, 1, 0],
+      [3, 1, 3, 0],
+      [0, 0, 3, 0],
   ]
   b = Board(make_board(cells))
 
   cells = [
-    [0, 0, 0, 0],
-    [0, 1, 3, 2],
-    [3, 2, 1, 0],
-    [3, 1, 6, 0],
+      [0, 0, 0, 0],
+      [0, 1, 3, 2],
+      [3, 2, 1, 0],
+      [3, 1, 6, 0],
   ]
   tail_idx = [(0, 0), (0, 1), (0, 2), (0, 3)]
   _check_move(b, MoveDirection.DOWN, cells, tail_idx)
@@ -177,18 +171,18 @@ def test_board_move_down():
 
 def test_board_move_right():
   cells = [
-    [0, 2, 0, 0],
-    [0, 1, 3, 2],
-    [3, 2, 1, 0],
-    [3, 1, 6, 0],
+      [0, 2, 0, 0],
+      [0, 1, 3, 2],
+      [3, 2, 1, 0],
+      [3, 1, 6, 0],
   ]
   b = Board(make_board(cells))
 
   cells = [
-    [0, 0, 2, 0],
-    [0, 1, 3, 2],
-    [0, 3, 2, 1],
-    [0, 3, 1, 6],
+      [0, 0, 2, 0],
+      [0, 1, 3, 2],
+      [0, 3, 2, 1],
+      [0, 3, 1, 6],
   ]
   tail_idx = [(0, 0), (1, 0), (2, 0), (3, 0)]
   _check_move(b, MoveDirection.RIGHT, cells, tail_idx)
@@ -202,6 +196,7 @@ def test_game_start():
 
 
 def test_game_move_by_deck():
+
   class MockDeck:
 
     def next(self):
@@ -216,10 +211,10 @@ def test_game_move_by_deck():
       self.max_card = card
 
   cells = [
-    [0, 1, 3, 2],
-    [3, 2, 1, 0],
-    [3, 1, 3, 0],
-    [0, 0, 3, 0],
+      [0, 1, 3, 2],
+      [3, 2, 1, 0],
+      [3, 1, 3, 0],
+      [0, 0, 3, 0],
   ]
 
   board = Board(make_board(cells))
@@ -234,10 +229,10 @@ def test_game_move_by_deck():
   game.move(MoveDirection.DOWN)
 
   cells = [
-    [0, 0, 0, 0],
-    [0, 1, 3, 2],
-    [3, 2, 1, 0],
-    [3, 1, 6, 0],
+      [0, 0, 0, 0],
+      [0, 1, 3, 2],
+      [3, 2, 1, 0],
+      [3, 1, 6, 0],
   ]
   expected_board = Board(make_board(cells))
   for i in range(1, BOARD_SIZE):
@@ -258,10 +253,10 @@ def test_game_move_by_deck():
 
 def test_game_done_false():
   cells = [
-    [0, 2, 0, 0],
-    [0, 1, 3, 2],
-    [3, 2, 1, 0],
-    [3, 1, 6, 0],
+      [0, 2, 0, 0],
+      [0, 1, 3, 2],
+      [3, 2, 1, 0],
+      [3, 1, 6, 0],
   ]
   board = Board(make_board(cells))
   game = ThreesGame(board)
@@ -270,10 +265,10 @@ def test_game_done_false():
 
 def test_game_done_true():
   cells = [
-    [3, 1, 6, 12],
-    [2, 6, 1, 24],
-    [2, 12, 192, 6],
-    [48, 768, 48, 12],
+      [3, 1, 6, 12],
+      [2, 6, 1, 24],
+      [2, 12, 192, 6],
+      [48, 768, 48, 12],
   ]
   board = Board(make_board(cells))
   game = ThreesGame(board)
@@ -282,12 +277,11 @@ def test_game_done_true():
 
 def test_game_done_true2():
   cells = [
-    [3, 384, 192, 2],
-    [2, 48, 96, 48],
-    [6, 12, 6, 24],
-    [1, 1, 1, 3],
+      [3, 384, 192, 2],
+      [2, 48, 96, 48],
+      [6, 12, 6, 24],
+      [1, 1, 1, 3],
   ]
   board = Board(make_board(cells))
   game = ThreesGame(board)
   assert game.done()
-

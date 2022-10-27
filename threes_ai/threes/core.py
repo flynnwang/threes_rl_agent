@@ -2,10 +2,10 @@ import random
 
 from .consts import *
 
-
 INITIAL_CARD_NUM = 9
 
 BONUS_CARD_CHANCE = 1. / 21.
+
 
 class Cell:
 
@@ -41,18 +41,17 @@ class Cell:
 
   def __eq__(self, other):
     if isinstance(other, Cell):
-        return self.card == other.card
+      return self.card == other.card
     return False
 
 
 def make_board(size):
-  return [[Cell() for i in range(size)]
-          for _ in range(4)]
+  return [[Cell() for i in range(size)] for _ in range(4)]
+
 
 def copy_board(cells):
-  return [[Cell(cells[i][j].card)
-           for j in range(BOARD_SIZE)]
-           for i in range(BOARD_SIZE)]
+  return [[Cell(cells[i][j].card) for j in range(BOARD_SIZE)]
+          for i in range(BOARD_SIZE)]
 
 
 class Board:
@@ -133,9 +132,8 @@ class Board:
 
   def __eq__(self, other):
     if isinstance(other, Board):
-        return self.cells == other.cells
+      return self.cells == other.cells
     return False
-
 
   def __repr__(self):
     rows = []
@@ -164,10 +162,9 @@ class Deck:
       self.cards = self._refill()
 
     if self.next_idx is None:
-      self.next_idx = random.randint(0, len(self.cards)-1)
+      self.next_idx = random.randint(0, len(self.cards) - 1)
 
     return self.cards[self.next_idx]
-
 
   def next(self, peek=False):
     card = self.peek()
@@ -198,6 +195,7 @@ class BonusCards:
       while c <= max_bonus_card:
         yield c
         c *= 2
+
     return list(_gen())
 
   def gen_candidate_cards(self):
@@ -277,8 +275,7 @@ class ThreesGame:
     return True
 
   def _fill_initial_board(self):
-    positions = [(i, j) for i in range(BOARD_SIZE)
-                 for j in range(BOARD_SIZE)]
+    positions = [(i, j) for i in range(BOARD_SIZE) for j in range(BOARD_SIZE)]
     positions = random.sample(positions, INITIAL_CARD_NUM)
 
     for i, j in positions:
@@ -291,7 +288,7 @@ class ThreesGame:
     fmt = "{0: <%s}" % width
 
     if self.done():
-        print("DONE :P")
+      print("DONE :P")
     print(f"Next card(s): {self.next_card.peek()}")
     for i in range(BOARD_SIZE):
       for j in range(BOARD_SIZE):

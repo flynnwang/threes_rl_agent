@@ -1,5 +1,3 @@
-
-
 import gym
 import numpy as np
 import torch
@@ -27,16 +25,20 @@ class ModelInputWrapper(gym.ObservationWrapper):
     self.board_shape = (1, BOARD_SIZE, BOARD_SIZE)
     board_space = torch.zeros(self.board_shape) + TOTAL_STATE_NUM
     self.observation_space = spaces.Dict({
-      "card_type": spaces.MultiDiscrete(board_space),
+        "card_type":
+        spaces.MultiDiscrete(board_space),
 
-      # Use a weight to indicate the relationship between numbers.
-      "card_weight": spaces.Box(0., 1., shape=(1, BOARD_SIZE, BOARD_SIZE)),
+        # Use a weight to indicate the relationship between numbers.
+        "card_weight":
+        spaces.Box(0., 1., shape=(1, BOARD_SIZE, BOARD_SIZE)),
 
-      # Prior knowledge: a white card should merge with another card of same type.
-      "is_white_card": spaces.MultiBinary((1, BOARD_SIZE, BOARD_SIZE)),
+        # Prior knowledge: a white card should merge with another card of same type.
+        "is_white_card":
+        spaces.MultiBinary((1, BOARD_SIZE, BOARD_SIZE)),
 
-      # candidate card channels.
-      "candidate_board": spaces.MultiDiscrete(board_space),
+        # candidate card channels.
+        "candidate_board":
+        spaces.MultiDiscrete(board_space),
     })
 
   def observation(self, obs):
@@ -57,8 +59,8 @@ class ModelInputWrapper(gym.ObservationWrapper):
       candidate_board[0, i, :] = card
 
     return {
-      "card_type": card_type,
-      "card_weight": card_weight,
-      "is_white_card": is_white_card,
-      "candidate_board": candidate_board,
+        "card_type": card_type,
+        "card_weight": card_weight,
+        "is_white_card": is_white_card,
+        "candidate_board": candidate_board,
     }
