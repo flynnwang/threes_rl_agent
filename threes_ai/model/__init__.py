@@ -1,3 +1,4 @@
+import logging
 from typing import Callable, Dict, Optional, Tuple, Union, NamedTuple, Any
 
 import gym
@@ -46,6 +47,14 @@ def _get_select_func(use_index_select: bool) -> Callable:
     return _forward_select
 
 
+class DictInputLayer(nn.Module):
+
+  @staticmethod
+  def forward(
+      x: Dict[str, Union[Dict, torch.Tensor]]) -> Dict[str, torch.Tensor]:
+    return x["obs"]
+
+
 class ConvEmbeddingInputLayer(nn.Module):
 
   def __init__(self,
@@ -61,7 +70,7 @@ class ConvEmbeddingInputLayer(nn.Module):
     n_embedding_channels = 0
     self.keys_to_op = {}
     for key, val in obs_space.spaces.items():
-      assert val.shape == (1, BOARD_SIZE, BOARD_SIZE)
+      assert val.shape == (1, BOARD_SIZE, BOARD_SIZE), f"{key}={val.shape}"
       if isinstance(val, gym.spaces.MultiBinary) or isinstance(
           val, gym.spaces.MultiDiscrete):
         if isinstance(val, gym.spaces.MultiBinary):
@@ -92,9 +101,9 @@ class ConvEmbeddingInputLayer(nn.Module):
     continuous_space_embedding_layers = []
     embedding_merger_layers = []
     merger_layers = []
-    print(
-        f'n_continuous_channels={n_continuous_channels}, n_embedding_channels={n_embedding_channels}'
-    )
+    # logging.info(
+    # f'n_continuous_channels={n_continuous_channels}, n_embedding_channels={n_embedding_channels}'
+    # )
 
     continuous_space_embedding_layers.extend(
         [nn.Conv2d(n_continuous_channels, out_dim, (1, 1)),
@@ -114,22 +123,36 @@ class ConvEmbeddingInputLayer(nn.Module):
     continuous_outs = []
     embedding_outs = {}
     for key, op in self.keys_to_op.items():
+      # print(x.keys(), key)
       in_tensor = x[key]
       if op == "embedding":
+        # (b, 1, x, y, n_embeddings)
+        # drop 1, it's useless
         out = self.select(self.embeddings[key], in_tensor)
-        assert len(out.shape) == 4
-        embedding_outs[key] = out.permute(
-            0, 3, 1, 2)  # move channel into second column.
+
+        # move channel into second column.
+        assert out.shape[1] == 1
+        out = out.squeeze(1).permute(0, 3, 1, 2)
+        assert len(
+            out.shape
+        ) == 4, f"Expect embedding to have 5 dims, get {len(out.shape)}: in_shape={in_tensor.shape}{out.shape}"
+        embedding_outs[key] = out
+        # print('Embedding, ', key, out.shape, in_tensor.shape)
       elif op == "continuous":
-        assert len(in_tensor.shape) == 3
-        out = in_tensor.unsqueeze(-3)
+        out = in_tensor  #.unsqueeze(-3)
+        assert len(in_tensor.shape) == 4, in_tensor.shape
         continuous_outs.append(out)
+        # print("contiguous , ", key, out.shape, in_tensor.shape)
       else:
         raise RuntimeError(f"Unknown operation: {op}")
+
     continuous_out_combined = self.continuous_space_embedding(
         torch.cat(continuous_outs, dim=1))
     embedding_outs_combined = self.embedding_merger(
         torch.cat([v for v in embedding_outs.values()], dim=1))
+
+    # print('continuous_out_combined shape, ', continuous_out_combined.shape)
+    # print('embedding_outs_combined shape, ', embedding_outs_combined.shape)
     merged_outs = self.merger(
         torch.cat([continuous_out_combined, embedding_outs_combined], dim=1))
     return merged_outs
@@ -250,7 +273,6 @@ class BaselineLayer(nn.Module):
     # Average feature planes
     x = torch.flatten(x, start_dim=-2, end_dim=-1).mean(dim=-1)
 
-    print(x.shape)
     # Project and reshape input
     x = self.linear(x)
     # Rescale to [0, 1], and then to the desired reward space
@@ -270,6 +292,7 @@ class BasicActorCriticNetwork(nn.Module):
       n_action_value_layers: int = 2,
   ):
     super(BasicActorCriticNetwork, self).__init__()
+    self.dict_input_layer = DictInputLayer()
     self.base_model = base_model
     self.base_out_channels = base_out_channels
 
@@ -293,9 +316,10 @@ class BasicActorCriticNetwork(nn.Module):
     )
 
   def forward(self,
-              x: torch.Tensor,
+              x: Dict[str, Union[dict, torch.Tensor]],
               sample: bool = True,
               **actor_kwargs) -> Dict[str, Any]:
+    x = self.dict_input_layer(x)
     base_out = self.base_model(x)
     policy_logits, actions = self.actor(self.actor_base(base_out),
                                         sample=sample,
@@ -331,11 +355,22 @@ class BasicActorCriticNetwork(nn.Module):
     return nn.Sequential(*layers)
 
 
-def create_model(observation_space,
-                 action_space,
-                 embedding_dim=32,
-                 hidden_dim=128,
-                 n_blocks=4):
+def create_model(flags, game_env,
+                 device: torch.device) -> nn.Module:
+  return _create_model(game_env.observation_space,
+                       game_env.action_space,
+                       embedding_dim=flags.embedding_dim,
+                       hidden_dim=flags.hidden_dim,
+                       n_blocks=flags.n_blocks,
+                       device=device)
+
+
+def _create_model(observation_space,
+                  action_space,
+                  embedding_dim=32,
+                  hidden_dim=128,
+                  n_blocks=4,
+                  device: torch.device = torch.device('cpu')):
   base_model = nn.Sequential(
       ConvEmbeddingInputLayer(observation_space, embedding_dim, hidden_dim), *[
           ResidualBlock(in_channels=hidden_dim,
@@ -343,5 +378,6 @@ def create_model(observation_space,
                         height=BOARD_SIZE,
                         width=BOARD_SIZE) for _ in range(n_blocks)
       ])
-  return BasicActorCriticNetwork(base_model, hidden_dim, action_space,
-                                 reward_spec)
+  model = BasicActorCriticNetwork(base_model, hidden_dim, action_space,
+                                  reward_spec)
+  return model.to(device=device)

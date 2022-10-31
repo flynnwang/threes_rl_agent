@@ -1,4 +1,5 @@
 import random
+from typing import Dict, List, NoReturn, Optional, Tuple, Union
 
 import gym
 import numpy as np
@@ -15,9 +16,10 @@ CARD_TO_STATE = dict((c, i) for i, c in enumerate(CARDS))
 class ThreesEnv(gym.Env):
   metadata = {"render_modes": ["console"], "render_fps": 4}
 
-  def __init__(self, render_mode=None):
+  def __init__(self, render_mode=None, seed=None):
     assert render_mode is None or render_mode in self.metadata["render_modes"]
     self.render_mode = render_mode
+    self._seed = seed
 
     # For each board position, the state could be one of the card or empty.
     # Same as the candidate card positions.
@@ -49,9 +51,13 @@ class ThreesEnv(gym.Env):
     return {"board": board_obs, "candidate_cards": candidate_cards_obs}
 
   def _get_info(self):
-    return {}
+    return {'max_card': self.game.board.max_card()}
+
+  def seed(self, seed: Optional[int] = None) -> NoReturn:
+    self._seed = seed
 
   def reset(self, seed=None):
+    seed = seed or self._seed
     super().reset(seed=seed)
 
     self.game = ThreesGame()
@@ -66,10 +72,14 @@ class ThreesEnv(gym.Env):
     moved = self.game.move(direction)
 
     terminated = self.game.done()
-    reward = 1 if moved else 0  # move as long as possible
+    reward = 1 if moved else -1  # move as long as possible
     obs = self._get_obs()
     info = self._get_info()
-    return obs, reward, terminated, info
+
+    # if terminated:
+    # print('terminated=', terminated, 'info=', info)
+    # observation, reward, terminated, truncated, info
+    return obs, reward, terminated, False, info
 
   def render(self):
     if self.render_mode == "console":
