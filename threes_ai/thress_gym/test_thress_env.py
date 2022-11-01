@@ -5,4 +5,4 @@ def test_three_env():
   env = ThreesEnv()
   obs, info = env.reset(seed=42)
   for _ in range(10):
-    obs, reward, done, info = env.step(env.action_space.sample())
+    obs, reward, done, _, info = env.step(env.action_space.sample())
