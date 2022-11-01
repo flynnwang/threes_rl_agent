@@ -263,6 +263,19 @@ def test_game_done_false():
   assert not game.done()
 
 
+def test_available_moves():
+  cells = [
+      [2, 3, 3, 3],
+      [3, 1, 1, 1],
+      [1, 3, 3, 3],
+      [3, 2, 2, 2],
+  ]
+  board = Board(make_board(cells))
+  game = ThreesGame(board)
+  assert game.get_available_moves() == set(
+      [MoveDirection.LEFT, MoveDirection.RIGHT])
+
+
 def test_game_done_true():
   cells = [
       [3, 1, 6, 12],

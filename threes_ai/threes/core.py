@@ -81,17 +81,12 @@ class Board:
     dropin_positions = []
     for _ in range(BOARD_SIZE):
       prev_cell = None
-      prev_rc = None
-      # print('--')
-
-      debug_cells = []
       for i in range(BOARD_SIZE):
         r, c = next(units)
         cur_cell = cells[r][c]
         # print(r, c, cur_cell)
 
         if i != 0 and prev_cell.can_merge(cur_cell):
-          # print(f'merge C<{r}, {c}>={cur_cell.card} into C<{prev_rc[0], prev_rc[1]}>={prev_cell.card}')
           prev_cell.merge(cur_cell)
           cur_cell.clear()
 
@@ -99,12 +94,6 @@ class Board:
           dropin_positions.append((r, c))
 
         prev_cell = cur_cell
-        prev_rc = (r, c)
-        debug_cells.append(cur_cell)
-
-      # print(debug_cells)
-      # print('--')
-
     return Board(cells), dropin_positions
 
   def put(self, x, y, card: int):
@@ -251,13 +240,17 @@ class ThreesGame:
     self.next_card = NextCard(self.board)
     self._fill_initial_board()
 
-  def done(self):
-    """Game is over if all four move directions are dead."""
+  def get_available_moves(self):
+    moves = set()
     for dir in list(MoveDirection):
       _, dropin_positions = self.board.move(dir)
       if dropin_positions:
-        return False
-    return True
+        moves.add(dir)
+    return moves
+
+  def done(self):
+    """Game is over if all four move directions are dead."""
+    return len(self.get_available_moves()) == 0
 
   def peek(self):
     return self.board, self.next_card.peek()
