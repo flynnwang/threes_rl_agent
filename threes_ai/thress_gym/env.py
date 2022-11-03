@@ -111,7 +111,6 @@ class ThreesEnv(gym.Env):
       num_card_after_moving -= 1
     num_merged_card = num_card_before_moving - num_card_after_moving
     reward = num_merged_card
-
     reward /= 500.0  # Given that we're targeting this max score
 
     # debug
