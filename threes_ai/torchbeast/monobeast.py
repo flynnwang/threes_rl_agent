@@ -186,6 +186,7 @@ def act(
           cached_reward = env_output["reward"]
           cached_done = env_output["done"]
           cached_info_max_card = env_output["info"]["max_card"]
+          cached_game_step_count = env_output["info"]["game_step_count"]
           cached_action_taken_mask = env_output["info"]["actions_taken_mask"]
 
           # print('1. cached_done=', cached_done, ' , max_card=',
@@ -196,6 +197,7 @@ def act(
           env_output["done"] = cached_done
           env_output["info"]["max_card"] = cached_info_max_card
           env_output["info"]["actions_taken_mask"] = cached_action_taken_mask
+          env_output["info"]["game_step_count"] = cached_game_step_count
 
           # print('2. cached_done=', cached_done, ' , max_card=',
           # env_output['info']['max_card'])
@@ -409,20 +411,18 @@ def learn(
 
       total_games_played += batch["done"].sum().item()
       max_card = batch["info"]['max_card']
+      game_step_count = batch["info"]['game_step_count']
       done = batch["done"]
 
-      def mean_max_card_num():
-        # print(max_card[batch["done"]])
-        # if max_card[batch["done"]].any():
-        # print(max_card[batch["done"]], max_card, batch["done"], batch['obs'])
-        # __import__('ipdb').set_trace()
-        return max_card[batch["done"]][~max_card[batch["done"]].isnan()].to(
+      def compute_mean_count_done(v):
+        return v[batch["done"]][~v[batch["done"]].isnan()].to(
             torch.float).mean().item()
 
       stats = {
           "Env": {
-              'max_card': mean_max_card_num(),
-              'played': batch["done"].sum().item(),
+              'max_card': compute_mean_count_done(max_card),
+              'game_step_count': compute_mean_count_done(game_step_count),
+              'batch_game_played': batch["done"].sum().item(),
           },
           "Loss": {
               "vtrace_pg_loss": vtrace_pg_loss.detach().item(),
@@ -440,7 +440,7 @@ def learn(
           },
           "Misc": {
               "learning_rate": last_lr,
-              "total_games_played": total_games_played
+              "total_games_played": total_games_played,
           },
       }
 

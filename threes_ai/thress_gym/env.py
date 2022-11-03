@@ -68,6 +68,7 @@ class ThreesEnv(gym.Env):
 
         # action mask before taking/selecting current action
         'actions_taken_mask': self._actions_taken_mask,
+        'game_step_count': self.game.num_step,
     }
 
     board_info = self.game.board.get_info()

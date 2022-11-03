@@ -247,6 +247,7 @@ class ThreesGame:
   def __init__(self, board=None):
     self.board = board
     self.next_card = None
+    self.num_step = 0
 
   def reset(self):
     self.board = Board()
@@ -278,6 +279,7 @@ class ThreesGame:
     new_board.put(*pos, new_card)
 
     self.board = new_board
+    self.num_step += 1
     return True
 
   def _fill_initial_board(self):
