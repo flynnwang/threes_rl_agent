@@ -63,15 +63,15 @@ class ThreesEnv(gym.Env):
   def _get_info(self):
     available_action_mask = self._get_action_mask()
     info = {
-        'max_card': self.game.board.max_card(),
-
         # action mask after taking current action, and available for current board state.
         'available_action_mask': available_action_mask,
-    }
-    if self._actions_taken_mask is not None:
-      # action mask before taking/selecting current action
-      info['actions_taken_mask'] = self._actions_taken_mask
 
+        # action mask before taking/selecting current action
+        'actions_taken_mask': self._actions_taken_mask,
+    }
+
+    board_info = self.game.board.get_info()
+    info.update(board_info)
     return info
 
   def seed(self, seed: Optional[int] = None) -> NoReturn:
@@ -94,16 +94,24 @@ class ThreesEnv(gym.Env):
 
     # compute info first to get accurate actions_taken_mask.
     self._actions_taken_mask = self._get_action_mask()
+    num_card_before_moving = self.game.board.count_card()
+
     direction = ACTION_TO_DIRECTION[action]
     moved = self.game.move(direction)
-
-    reward = 1 if moved else -1  # move as long as possible
-    reward /= 500.0  # Given that we're targeting this max score
 
     terminated = self.game.done()
 
     obs = self._get_obs()
     info = self._get_info()
+
+    num_card_after_moving = info['num_card']
+    if moved:
+      # for a successful move, one card will be added to the board.
+      num_card_after_moving -= 1
+    num_merged_card = num_card_before_moving - num_card_after_moving
+    reward = num_merged_card
+
+    reward /= 500.0  # Given that we're targeting this max score
 
     # debug
     # self.game.display()

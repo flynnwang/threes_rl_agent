@@ -14,7 +14,7 @@ project: threes-ai
 # The wandb user to log to
 entity: pyflynn
 # The wandb group for the run
-group: test_run_001
+group: test_run_002
 
 ## ENV params
 obs_space_kwargs: {}
@@ -23,7 +23,7 @@ reward_space_kwargs: {}
 ## TRAINING params
 total_steps: 2e8
 num_actors: 1
-n_actor_envs: 16
+n_actor_envs: 32
 unroll_length: 64
 batch_size: 4
 discounting: 0.999

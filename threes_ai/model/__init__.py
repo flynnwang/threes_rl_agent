@@ -19,8 +19,8 @@ class RewardSpec(NamedTuple):
 
 
 reward_spec = RewardSpec(
-    reward_min=+20,
-    reward_max=-20,
+    reward_min=-10,
+    reward_max=+10,
     zero_sum=False,
 )
 

@@ -14,7 +14,7 @@ project: threes-ai
 # The wandb user to log to
 entity: pyflynn
 # The wandb group for the run
-group: test_run_001
+group: test_run_002
 
 ## ENV params
 obs_space_kwargs: {}

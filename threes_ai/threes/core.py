@@ -116,6 +116,19 @@ class Board:
           card = max(card, self.cells[i][j].card)
     return card
 
+  def get_info(self):
+    mx_card = -1
+    num_card = 0
+    for i in range(BOARD_SIZE):
+      for j in range(BOARD_SIZE):
+        if self.cells[i][j].has_card():
+          mx_card = max(mx_card, self.cells[i][j].card)
+          num_card += 1
+    return {
+        'max_card': mx_card,
+        'num_card': num_card,
+    }
+
   def get_card(self, x, y):
     return self.cells[x][y].card
 
