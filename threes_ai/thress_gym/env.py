@@ -9,6 +9,7 @@ from threes_ai.threes.consts import *
 from threes_ai.threes import ThreesGame
 
 ACTION_TO_DIRECTION = dict(enumerate(list(MoveDirection)))
+# DIRECTION_TO_ACTION = {v: k for k, v in ACTION_TO_DIRECTION.items()}
 
 CARD_TO_STATE = dict((c, i) for i, c in enumerate(CARDS))
 
@@ -34,6 +35,7 @@ class ThreesEnv(gym.Env):
 
     # LEFT/RIGHT/UP/DOWN
     self.action_space = spaces.Discrete(NUM_ACTIONS)
+    self._actions_taken_mask = np.zeros(NUM_ACTIONS, dtype=np.int32)
 
   def _get_obs(self):
     board_obs = np.zeros((BOARD_SIZE, BOARD_SIZE), dtype=int)
@@ -50,8 +52,27 @@ class ThreesEnv(gym.Env):
 
     return {"board": board_obs, "candidate_cards": candidate_cards_obs}
 
+  def _get_action_mask(self):
+    moves = self.game.get_available_moves()
+    actions_mask = np.zeros(NUM_ACTIONS, dtype=np.int32)
+    for a, m in ACTION_TO_DIRECTION.items():
+      if m in moves:
+        actions_mask[a] = 1
+    return actions_mask
+
   def _get_info(self):
-    return {'max_card': self.game.board.max_card()}
+    available_action_mask = self._get_action_mask()
+    info = {
+        'max_card': self.game.board.max_card(),
+
+        # action mask after taking current action, and available for current board state.
+        'available_action_mask': available_action_mask,
+    }
+    if self._actions_taken_mask is not None:
+      # action mask before taking/selecting current action
+      info['actions_taken_mask'] = self._actions_taken_mask
+
+    return info
 
   def seed(self, seed: Optional[int] = None) -> NoReturn:
     self._seed = seed
@@ -68,13 +89,30 @@ class ThreesEnv(gym.Env):
     return obs, info
 
   def step(self, action: int):
+    # print('before info', self._get_info())
+    # self.game.display()
+
+    # compute info first to get accurate actions_taken_mask.
+    self._actions_taken_mask = self._get_action_mask()
     direction = ACTION_TO_DIRECTION[action]
     moved = self.game.move(direction)
 
-    terminated = self.game.done()
     reward = 1 if moved else -1  # move as long as possible
+    reward /= 500.0  # Given that we're targeting this max score
+
+    terminated = self.game.done()
+
     obs = self._get_obs()
     info = self._get_info()
+
+    # debug
+    # self.game.display()
+    # print('after info: ', info)
+
+    # actions_taken_mask = info['actions_taken_mask']
+    # if actions_taken_mask[action] == 0:
+    # __import__('ipdb').set_trace()
+    # print()
 
     # if terminated:
     # print('terminated=', terminated, 'info=', info)

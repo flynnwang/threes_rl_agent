@@ -24,7 +24,7 @@ reward_space_kwargs: {}
 total_steps: 2e7
 num_actors: 1
 n_actor_envs: 1
-unroll_length: 4
+unroll_length: 1
 batch_size: 1
 discounting: 0.999
 
@@ -67,7 +67,7 @@ teacher_load_dir:
 teacher_checkpoint_file:
 
 # MISCELLANEOUS params
-use_mixed_precision: False
+use_mixed_precision: True
 actor_device: cpu
 learner_device: cpu
 model_log_freq: 100

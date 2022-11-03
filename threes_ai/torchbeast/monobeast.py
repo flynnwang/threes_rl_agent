@@ -48,33 +48,67 @@ logging.basicConfig(
 )
 
 
-def combine_policy_logits_to_log_probs(behavior_policy_logits: torch.Tensor,
-                                       actions: torch.Tensor) -> torch.Tensor:
-  """Select logits by action."""
-  return torch.gather(behavior_policy_logits, -1,
-                      actions.unsqueeze(-1)).squeeze(dim=-1)
+def combine_policy_logits_to_log_probs(
+    behavior_policy_logits: torch.Tensor, actions: torch.Tensor,
+    actions_taken_mask: torch.Tensor) -> torch.Tensor:
+  """Combines all policy_logits at a given step to get a single action_log_probs value for that step
+  """
+  actions_taken = actions.unsqueeze(-1)
+  # Get the action probabilities
+  probs = F.softmax(behavior_policy_logits, dim=-1)
+  # Ignore probabilities for actions that were not used
+  probs = actions_taken_mask * probs
+  # Select the probabilities for actions that were taken by stacked agents and sum these
+  selected_probs = torch.gather(probs, -1, actions_taken)
+  # Convert the probs to conditional probs
+  remaining_probability_density = probs.sum(dim=-1).unsqueeze(-1)
+
+  conditional_selected_probs = selected_probs / remaining_probability_density
+  # if (conditional_selected_probs == 0).any():
+  # __import__('ipdb').set_trace()
+  # print()
+
+  log_probs = torch.log(conditional_selected_probs)
+
+  # if torch.isnan(log_probs).any():
+  # __import__('ipdb').set_trace()
+  # print()
+
+  return log_probs.squeeze(dim=-1)  # shape (16, ), not (16, 1)
 
 
-def combine_policy_entropy(policy_logits: torch.Tensor) -> torch.Tensor:
+def combine_policy_entropy(policy_logits: torch.Tensor,
+                           actions_taken_mask: torch.Tensor) -> torch.Tensor:
   """Computes and combines policy entropy for a given step."""
   policy = F.softmax(policy_logits, dim=-1)
   log_policy = F.log_softmax(policy_logits, dim=-1)
   log_policy_masked_zeroed = torch.where(log_policy.isneginf(),
                                          torch.zeros_like(log_policy),
                                          log_policy)
-  entropies = (policy * log_policy_masked_zeroed).sum(dim=-1)
-  return entropies
+  entropies = (policy * log_policy_masked_zeroed)
+  assert actions_taken_mask.shape == entropies.shape, (
+      actions_taken_mask.shape, entropies.shape)
+  entropies_masked = entropies * actions_taken_mask.float()
+
+  r = entropies_masked.sum(dim=-1)
+  # if torch.isnan(r).any():
+  # __import__('ipdb').set_trace()
+  # print()
+  return r
 
 
-def compute_teacher_kl_loss(
-    learner_policy_logits: torch.Tensor,
-    teacher_policy_logits: torch.Tensor) -> torch.Tensor:
+def compute_teacher_kl_loss(learner_policy_logits: torch.Tensor,
+                            teacher_policy_logits: torch.Tensor,
+                            actions_taken_mask: torch.Tensor) -> torch.Tensor:
   learner_policy_log_probs = F.log_softmax(learner_policy_logits, dim=-1)
   teacher_policy = F.softmax(teacher_policy_logits, dim=-1)
   kl_div = F.kl_div(learner_policy_log_probs,
                     teacher_policy.detach(),
                     reduction="none",
                     log_target=False).sum(dim=-1)
+  assert actions_taken_mask.shape == kl_div.shape, (actions_taken_mask.shape,
+                                                    kl_div.shape)
+  kl_div_masked = kl_div * actions_taken_mask.float()
   return kl_div_masked.sum(dim=-1).squeeze(dim=-1)
 
 
@@ -142,6 +176,7 @@ def act(
       for t in range(flags.unroll_length):
         timings.reset()
 
+        # print('done?: ', env_output["done"])
         agent_output = actor_model(env_output)
         timings.time("model")
 
@@ -151,6 +186,7 @@ def act(
           cached_reward = env_output["reward"]
           cached_done = env_output["done"]
           cached_info_max_card = env_output["info"]["max_card"]
+          cached_action_taken_mask = env_output["info"]["actions_taken_mask"]
 
           # print('1. cached_done=', cached_done, ' , max_card=',
           # env_output['info']['max_card'])
@@ -159,14 +195,33 @@ def act(
           env_output["reward"] = cached_reward
           env_output["done"] = cached_done
           env_output["info"]["max_card"] = cached_info_max_card
+          env_output["info"]["actions_taken_mask"] = cached_action_taken_mask
 
           # print('2. cached_done=', cached_done, ' , max_card=',
           # env_output['info']['max_card'])
 
         timings.time("step")
 
+        # actions = agent_output['actions']
+        # actions_taken_mask = env_output['info']['actions_taken_mask']
+        # for i, a in enumerate(actions):
+        # if actions_taken_mask[i][a] == 0:
+        # __import__('ipdb').set_trace()
+        # print()
+
         fill_buffers_inplace(buffers[index], dict(**env_output,
                                                   **agent_output), t + 1)
+
+        # debug
+        # batch = buffers[index]
+        # __import__('ipdb').set_trace()
+        # actions = batch["actions"][0, :]
+        # actions_taken_mask = batch["info"]["actions_taken_mask"][0, :]
+        # for i, a in enumerate(actions):
+        # if actions_taken_mask[i][a] == 0:
+        # __import__('ipdb').set_trace()
+        # print()
+
         timings.time("write")
       full_queue.put(index)
 
@@ -265,14 +320,16 @@ def learn(
       # actions_taken_mask = batch["info"]["actions_taken"][act_space]
 
       actions = batch["actions"]
+      actions_taken_mask = batch["info"]["actions_taken_mask"]
       behavior_policy_logits = batch["policy_logits"]
+
       behavior_action_log_probs = combine_policy_logits_to_log_probs(
-          behavior_policy_logits, actions)
+          behavior_policy_logits, actions, actions_taken_mask)
       combined_behavior_action_log_probs = combined_behavior_action_log_probs + behavior_action_log_probs
 
       learner_policy_logits = learner_outputs["policy_logits"]
       learner_action_log_probs = combine_policy_logits_to_log_probs(
-          learner_policy_logits, actions)
+          learner_policy_logits, actions, actions_taken_mask)
       combined_learner_action_log_probs = combined_learner_action_log_probs + learner_action_log_probs
 
       if flags.use_teacher:
@@ -284,7 +341,8 @@ def learn(
       combined_teacher_kl_loss = combined_teacher_kl_loss + teacher_kl_loss
 
       # TODO: use learner_policy_entropy
-      learner_policy_entropy = combine_policy_entropy(learner_policy_logits)
+      learner_policy_entropy = combine_policy_entropy(learner_policy_logits,
+                                                      actions_taken_mask)
       combined_learner_entropy = combined_learner_entropy + learner_policy_entropy
 
       discounts = (~batch["done"]).float() * flags.discounting
@@ -314,6 +372,9 @@ def learn(
           combined_learner_action_log_probs,
           vtrace_returns.pg_advantages,
           reduction=flags.reduction)
+      # if vtrace_pg_loss > 100000:
+      # __import__('ipdb').set_trace()
+
       upgo_clipped_importance = torch.minimum(
           vtrace_returns.log_rhos.exp(),
           torch.ones_like(vtrace_returns.log_rhos)).detach()
@@ -374,8 +435,8 @@ def learn(
           },
           "Entropy": {
               "learner_policy_entropy":
-              reduce(learner_policy_entropy,
-                     reduction="sum").detach().cpu().item(),
+              -reduce(learner_policy_entropy,
+                      reduction="sum").detach().cpu().item(),
           },
           "Misc": {
               "learning_rate": last_lr,
@@ -632,7 +693,7 @@ def train(flags):
     while step < flags.total_steps:
       start_step = step
       start_time = timer()
-      time.sleep(10)
+      time.sleep(3)
 
       # Save every checkpoint_freq minutes
       if timer() - last_checkpoint_time > flags.checkpoint_freq * 60:

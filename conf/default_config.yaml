@@ -21,7 +21,7 @@ obs_space_kwargs: {}
 reward_space_kwargs: {}
 
 ## TRAINING params
-total_steps: 2e7
+total_steps: 2e8
 num_actors: 1
 n_actor_envs: 16
 unroll_length: 64
@@ -67,7 +67,7 @@ teacher_load_dir:
 teacher_checkpoint_file:
 
 # MISCELLANEOUS params
-use_mixed_precision: False
+use_mixed_precision: True
 actor_device: cpu
 learner_device: cpu
 model_log_freq: 100

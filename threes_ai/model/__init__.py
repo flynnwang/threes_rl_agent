@@ -19,8 +19,8 @@ class RewardSpec(NamedTuple):
 
 
 reward_spec = RewardSpec(
-    reward_min=0,
-    reward_max=1.,
+    reward_min=+20,
+    reward_max=-20,
     zero_sum=False,
 )
 
@@ -51,8 +51,9 @@ class DictInputLayer(nn.Module):
 
   @staticmethod
   def forward(
-      x: Dict[str, Union[Dict, torch.Tensor]]) -> Dict[str, torch.Tensor]:
-    return x["obs"]
+      x: Dict[str, Union[Dict, torch.Tensor]]
+  ) -> Tuple[Dict[str, torch.Tensor], torch.Tensor]:
+    return x["obs"], x["info"]["available_action_mask"]
 
 
 class ConvEmbeddingInputLayer(nn.Module):
@@ -137,7 +138,9 @@ class ConvEmbeddingInputLayer(nn.Module):
             out.shape
         ) == 4, f"Expect embedding to have 5 dims, get {len(out.shape)}: in_shape={in_tensor.shape}{out.shape}"
         embedding_outs[key] = out
-        # print('Embedding, ', key, out.shape, in_tensor.shape)
+        # if torch.isnan(out).any():
+        # __import__('ipdb').set_trace()
+        # print('Embedding, ', key, out.shape, in_tensor.shape, out, in_tensor)
       elif op == "continuous":
         out = in_tensor  #.unsqueeze(-3)
         assert len(in_tensor.shape) == 4, in_tensor.shape
@@ -153,8 +156,13 @@ class ConvEmbeddingInputLayer(nn.Module):
 
     # print('continuous_out_combined shape, ', continuous_out_combined.shape)
     # print('embedding_outs_combined shape, ', embedding_outs_combined.shape)
+    # print('continuous_outs', continuous_outs)
+    # print('embedding_outs', embedding_outs)
+    # print('continuous_out_combined', continuous_out_combined)
+    # print('embedding_outs_combined', embedding_outs_combined)
     merged_outs = self.merger(
         torch.cat([continuous_out_combined, embedding_outs_combined], dim=1))
+    # print('merged_outs', merged_outs)
     return merged_outs
 
 
@@ -241,18 +249,43 @@ class DictActor(nn.Module):
     linear = nn.Linear(in_channels * BOARD_SIZE * BOARD_SIZE, action_space.n)
     self.actor = nn.Sequential(conv2d, flatten, linear)
 
-  def forward(self, x: torch.Tensor,
+  def forward(self, x: torch.Tensor, actions_mask: torch.Tensor,
               sample: bool) -> Tuple[torch.Tensor, torch.Tensor]:
     logits = self.actor(x)
-    actions = DictActor.logits_to_actions(logits, sample)
+
+    # Filter action based on action mask
+    logits = torch.where(actions_mask > 0, logits,
+                         torch.zeros_like(logits) + float("-inf"))
+
+    # try:
+    actions = DictActor.logits_to_actions(logits, sample, actions_mask)
+    # except Exception as e:
+    # __import__('ipdb').set_trace()
     return logits, actions
 
   @staticmethod
   @torch.no_grad()
-  def logits_to_actions(logits: torch.Tensor, sample: bool) -> int:
+  def logits_to_actions(logits: torch.Tensor, sample: bool,
+                        actions_mask) -> int:
     if sample:
       policy = Categorical(logits=logits)
-      return policy.sample()
+
+      actions = policy.sample()
+
+      # debug
+      # probs = policy.probs
+      # for i, a in enumerate(actions):
+      # if actions_mask[i][a] == 0:
+      # __import__('ipdb').set_trace()
+      # print()
+      # if probs[i][a] == 0:
+      # __import__('ipdb').set_trace()
+      # print()
+
+      # __import__('ipdb').set_trace()
+      # print('sample=', sample, 'actions', actions, 'logits=', logits, 'probs=',
+      # probs)
+      return actions
     else:
       return logits.argsort(dim=-1, descending=True)[:, 1]
 
@@ -316,13 +349,14 @@ class BasicActorCriticNetwork(nn.Module):
     )
 
   def forward(self,
-              x: Dict[str, Union[dict, torch.Tensor]],
+              x1: Dict[str, Union[dict, torch.Tensor]],
               sample: bool = True,
               **actor_kwargs) -> Dict[str, Any]:
-    x = self.dict_input_layer(x)
+    x, actions_mask = self.dict_input_layer(x1)
     base_out = self.base_model(x)
     policy_logits, actions = self.actor(self.actor_base(base_out),
                                         sample=sample,
+                                        actions_mask=actions_mask,
                                         **actor_kwargs)
     baseline = self.baseline(self.baseline_base(base_out))
     return dict(actions=actions,
@@ -355,8 +389,7 @@ class BasicActorCriticNetwork(nn.Module):
     return nn.Sequential(*layers)
 
 
-def create_model(flags, game_env,
-                 device: torch.device) -> nn.Module:
+def create_model(flags, game_env, device: torch.device) -> nn.Module:
   return _create_model(game_env.observation_space,
                        game_env.action_space,
                        embedding_dim=flags.embedding_dim,
