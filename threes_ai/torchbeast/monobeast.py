@@ -188,6 +188,7 @@ def act(
           cached_info_max_card = env_output["info"]["max_card"]
           cached_game_step_count = env_output["info"]["game_step_count"]
           cached_action_taken_mask = env_output["info"]["actions_taken_mask"]
+          cached_card_sum = env_output["info"]["card_sum"]
 
           # print('1. cached_done=', cached_done, ' , max_card=',
           # env_output['info']['max_card'])
@@ -198,6 +199,7 @@ def act(
           env_output["info"]["max_card"] = cached_info_max_card
           env_output["info"]["actions_taken_mask"] = cached_action_taken_mask
           env_output["info"]["game_step_count"] = cached_game_step_count
+          env_output["info"]["card_sum"] = cached_card_sum
 
           # print('2. cached_done=', cached_done, ' , max_card=',
           # env_output['info']['max_card'])
@@ -411,6 +413,7 @@ def learn(
 
       total_games_played += batch["done"].sum().item()
       max_card = batch["info"]['max_card']
+      card_sum = batch["info"]['card_sum']
       game_step_count = batch["info"]['game_step_count']
       done = batch["done"]
 
@@ -420,6 +423,7 @@ def learn(
 
       stats = {
           "Env": {
+              'card_sum': compute_mean_count_done(card_sum),
               'max_card': compute_mean_count_done(max_card),
               'game_step_count': compute_mean_count_done(game_step_count),
               'batch_game_played': batch["done"].sum().item(),

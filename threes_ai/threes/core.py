@@ -119,14 +119,18 @@ class Board:
   def get_info(self):
     mx_card = -1
     num_card = 0
+    card_sum = 0
     for i in range(BOARD_SIZE):
       for j in range(BOARD_SIZE):
         if self.cells[i][j].has_card():
-          mx_card = max(mx_card, self.cells[i][j].card)
+          card = self.cells[i][j].card
+          mx_card = max(mx_card, card)
           num_card += 1
+          card_sum += card
     return {
         'max_card': mx_card,
         'num_card': num_card,
+        'card_sum': card_sum,
     }
 
   def get_card(self, x, y):
