@@ -63,11 +63,22 @@ def combine_policy_logits_to_log_probs(
   # Convert the probs to conditional probs
   remaining_probability_density = probs.sum(dim=-1).unsqueeze(-1)
 
+  # Avoid division by zero
+  remaining_probability_density = remaining_probability_density + torch.where(
+      remaining_probability_density == 0,
+      torch.ones_like(remaining_probability_density),
+      torch.zeros_like(remaining_probability_density))
   conditional_selected_probs = selected_probs / remaining_probability_density
+
+  # Remove 0-valued conditional_selected_probs in order to eliminate neg-inf valued log_probs
+  conditional_selected_probs = conditional_selected_probs + torch.where(
+      conditional_selected_probs == 0,
+      torch.ones_like(conditional_selected_probs),
+      torch.zeros_like(conditional_selected_probs))
+
   # if (conditional_selected_probs == 0).any():
   # __import__('ipdb').set_trace()
   # print()
-
   log_probs = torch.log(conditional_selected_probs)
 
   # if torch.isnan(log_probs).any():
