@@ -708,7 +708,11 @@ def train(flags):
     while step < flags.total_steps:
       start_step = step
       start_time = timer()
-      time.sleep(3)
+
+      sleep_time = 3
+      if flags.disable_wandb:
+        sleep_time = 300
+      time.sleep(sleep_time)
 
       # Save every checkpoint_freq minutes
       if timer() - last_checkpoint_time > flags.checkpoint_freq * 60:

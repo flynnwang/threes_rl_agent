@@ -139,7 +139,7 @@ class ConvEmbeddingInputLayer(nn.Module):
         ) == 4, f"Expect embedding to have 5 dims, get {len(out.shape)}: in_shape={in_tensor.shape}{out.shape}"
         embedding_outs[key] = out
         # if torch.isnan(out).any():
-        # __import__('ipdb').set_trace()
+          # __import__('ipdb').set_trace()
         # print('Embedding, ', key, out.shape, in_tensor.shape, out, in_tensor)
       elif op == "continuous":
         out = in_tensor  #.unsqueeze(-3)
@@ -282,7 +282,6 @@ class DictActor(nn.Module):
       # __import__('ipdb').set_trace()
       # print()
 
-      # __import__('ipdb').set_trace()
       # print('sample=', sample, 'actions', actions, 'logits=', logits, 'probs=',
       # probs)
       return actions
