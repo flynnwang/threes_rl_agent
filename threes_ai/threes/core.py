@@ -56,10 +56,11 @@ def copy_board(cells):
 
 class Board:
 
-  def __init__(self, cells=None):
+  def __init__(self, cells=None, merge_sum=0):
     self.cells = cells
     if self.cells is None:
       self.cells = make_board(BOARD_SIZE)
+    self.merge_sum = merge_sum
 
   def get_units(self, direction: MoveDirection):
     for i in range(BOARD_SIZE):
@@ -79,22 +80,33 @@ class Board:
     cells = copy_board(self.cells)
     units = self.get_units(direction)
     dropin_positions = []
+    merge_sum = 0
     for _ in range(BOARD_SIZE):
       prev_cell = None
+      # pr, pc = -1, -1
       for i in range(BOARD_SIZE):
         r, c = next(units)
         cur_cell = cells[r][c]
         # print(r, c, cur_cell)
 
         if i != 0 and prev_cell.can_merge(cur_cell):
+          if prev_cell.has_card() and cur_cell.has_card():
+            merge_sum += prev_cell.card + cur_cell.card
+            # print('action=%s, merge (%s, %s) %s => (%s, %s) %s' %
+            # (direction, r, c, cur_cell, pr, pc, prev_cell))
+
           prev_cell.merge(cur_cell)
+
           cur_cell.clear()
 
         if i == BOARD_SIZE - 1 and cur_cell.empty():
           dropin_positions.append((r, c))
 
         prev_cell = cur_cell
-    return Board(cells), dropin_positions
+        # pr = r
+        # pc = c
+
+    return Board(cells, merge_sum), dropin_positions
 
   def put(self, x, y, card: int):
     assert self.cells[x][y].empty()

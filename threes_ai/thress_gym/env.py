@@ -105,17 +105,32 @@ class ThreesEnv(gym.Env):
     obs = self._get_obs()
     info = self._get_info()
 
-    num_card_after_moving = info['num_card']
-    if moved:
-      # for a successful move, one card will be added to the board.
-      num_card_after_moving -= 1
-    num_merged_card = num_card_before_moving - num_card_after_moving
-    reward = num_merged_card
+    # num_merged_card = 0
+    # num_card_after_moving = info['num_card']
+    # if moved:
+    # # for a successful move, one card will be added to the board.
+    # num_card_after_moving -= 1
+    # num_merged_card = num_card_before_moving - num_card_after_moving
+    # reward = num_merged_card
+    # r1 = num_merged_card / 50.0
+
+    # reward /= 500.0  # Given that we're targeting this max score
+
+    def reward_score(r):
+      return (r // 3)
+
+    merge_sum = self.game.board.merge_sum
+    reward = reward_score(merge_sum) if merge_sum > 0 else 0
     reward /= 500.0  # Given that we're targeting this max score
 
+    # print("num_merged=%s, r1=%s, r2=%s, merge_sum=%s" %
+    # (num_merged_card, r1, reward, merge_sum))
     # debug
+    # if num_merged_card == 0 and merge_sum > 0:
     # self.game.display()
     # print('after info: ', info)
+    # print('action: ', action, ACTION_TO_DIRECTION[action])
+    # __import__('ipdb').set_trace()
 
     # actions_taken_mask = info['actions_taken_mask']
     # if actions_taken_mask[action] == 0:
