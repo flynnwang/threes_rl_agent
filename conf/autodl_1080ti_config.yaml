@@ -1,0 +1,77 @@
+defaults:
+- override hydra/job_logging: default
+- override hydra/hydra_logging: default
+
+hydra:
+  run:
+    dir: /root/autodl-tmp/outputs/${now:%m-%d}/${now:%H-%M-%S}
+
+name: autodl_b16_h64_e32_2e9
+
+## WANDB params
+# The wandb project name
+project: threes-ai
+# The wandb user to log to
+entity: pyflynn
+# The wandb group for the run
+group: autodi_1080ti_runs
+
+## ENV params
+obs_space_kwargs: {}
+reward_space_kwargs: {}
+
+## TRAINING params
+total_steps: 2e9
+num_actors: 8
+n_actor_envs: 32
+unroll_length: 64
+batch_size: 16
+discounting: 0.999
+
+## MODEL params
+model_arch: conv_model
+n_blocks: 8
+hidden_dim: 128
+embedding_dim: 32
+n_merge_layers: 1
+normalize: False
+sum_player_embeddings: False
+use_index_select: False
+rescale_value_input: True
+rescale_se_input: True
+# Conv-specific params
+kernel_size: 3
+
+
+## OPTIMIZER params
+optimizer_class: Adam
+optimizer_kwargs:
+  lr: 5e-5
+  # See https://arxiv.org/pdf/2105.05246.pdf
+  eps: 0.0003
+  #alpha: 0.9
+min_lr_mod: 0.01
+
+## LOSS params
+entropy_cost: 0.0002
+baseline_cost: 1.
+teacher_kl_cost: 0.005
+teacher_baseline_cost: 0.0
+# lambda parameter for TD-lambda and UPGO losses
+lmb: 0.9
+reduction: sum
+
+# Pretrained model for KL loss
+use_teacher: False
+teacher_load_dir:
+teacher_checkpoint_file:
+
+# MISCELLANEOUS params
+use_mixed_precision: True
+actor_device: cuda
+learner_device: cuda
+model_log_freq: 100
+# file_descriptor or file_system
+sharing_strategy: file_system
+disable_wandb: False
+debug: False

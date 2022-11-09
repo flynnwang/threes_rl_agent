@@ -158,6 +158,10 @@ def act(
     actor_model: torch.nn.Module,
     buffers: Buffers,
 ):
+  print('-' * 80)
+  print(flags.group)
+  print('-' * 80)
+
   if flags.debug:
     catch_me = AssertionError
   else:
@@ -710,8 +714,8 @@ def train(flags):
       start_time = timer()
 
       sleep_time = 3
-      if flags.disable_wandb:
-        sleep_time = 300
+      # if flags.disable_wandb:
+      # sleep_time = 300
       time.sleep(sleep_time)
 
       # Save every checkpoint_freq minutes

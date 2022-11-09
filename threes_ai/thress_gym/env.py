@@ -117,7 +117,7 @@ class ThreesEnv(gym.Env):
     # reward /= 500.0  # Given that we're targeting this max score
 
     def reward_score(r):
-      return (r // 3)
+      return (r / 6)
 
     merge_sum = self.game.board.merge_sum
     reward = reward_score(merge_sum) if merge_sum > 0 else 0
