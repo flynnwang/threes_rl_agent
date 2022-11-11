@@ -22,10 +22,10 @@ reward_space_kwargs: {}
 
 ## TRAINING params
 total_steps: 3e9
-num_actors: 12
+num_actors: 15
 n_actor_envs: 128
 unroll_length: 16
-batch_size: 64
+batch_size: 128
 discounting: 0.999
 
 ## MODEL params
