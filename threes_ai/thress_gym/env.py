@@ -42,7 +42,7 @@ class ThreesEnv(gym.Env):
     for i in range(BOARD_SIZE):
       for j in range(BOARD_SIZE):
         card = self.game.board.get_card(i, j)
-        assert card in CARDS
+        assert card in CARDS, f"what? {card}"
         board_obs[i][j] = CARD_TO_STATE[card]
 
     candidate_cards_obs = np.zeros(MAX_CANDIDATE_CARDS_NUM, dtype=int)

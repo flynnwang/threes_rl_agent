@@ -158,9 +158,6 @@ def act(
     actor_model: torch.nn.Module,
     buffers: Buffers,
 ):
-  print('-' * 80)
-  print(flags.group)
-  print('-' * 80)
 
   if flags.debug:
     catch_me = AssertionError

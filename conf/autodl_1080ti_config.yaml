@@ -6,7 +6,7 @@ hydra:
   run:
     dir: /root/autodl-tmp/outputs/${now:%m-%d}/${now:%H-%M-%S}
 
-name: autodl_b16_h64_e32_2e9
+name: autodl_b16_h128_e32_2e9_3090_restart3
 
 ## WANDB params
 # The wandb project name
@@ -21,16 +21,16 @@ obs_space_kwargs: {}
 reward_space_kwargs: {}
 
 ## TRAINING params
-total_steps: 2e9
-num_actors: 8
-n_actor_envs: 32
-unroll_length: 64
-batch_size: 16
+total_steps: 3e9
+num_actors: 12
+n_actor_envs: 128
+unroll_length: 16
+batch_size: 64
 discounting: 0.999
 
 ## MODEL params
 model_arch: conv_model
-n_blocks: 8
+n_blocks: 16
 hidden_dim: 128
 embedding_dim: 32
 n_merge_layers: 1
@@ -75,3 +75,12 @@ model_log_freq: 100
 sharing_strategy: file_system
 disable_wandb: False
 debug: False
+
+#load_dir: /root/autodl-tmp/outputs/11-09/22-28-57
+#checkpoint_file: 0653713408.pt
+
+load_dir: /root/autodl-tmp/outputs/11-11/00-39-38
+checkpoint_file: 0214290432.pt
+
+weights_only: False
+n_value_warmup_batches: 0

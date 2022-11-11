@@ -60,7 +60,7 @@ def get_default_flags(flags: DictConfig) -> DictConfig:
   return OmegaConf.create(flags)
 
 
-@hydra.main(config_path="conf", config_name="default_config")
+@hydra.main(config_path="conf", config_name="autodl_1080ti_config")
 def main(flags: DictConfig):
   cli_conf = OmegaConf.from_cli()
   if Path("config.yaml").exists():
@@ -75,8 +75,8 @@ def main(flags: DictConfig):
         "Loading existing configuration, we're continuing a previous run")
     new_flags = OmegaConf.load(Path(flags.load_dir) / "config.yaml")
     # Overwrite some parameters
-    new_flags = OmegaConf.merge(new_flags, flags)
-    flags = OmegaConf.merge(new_flags, cli_conf)
+
+    flags = OmegaConf.merge(new_flags, flags, cli_conf)
 
   flags = get_default_flags(flags)
   logging.info(OmegaConf.to_yaml(flags, resolve=True))
