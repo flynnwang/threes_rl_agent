@@ -83,6 +83,7 @@ class Board:
     merge_sum = 0
     for _ in range(BOARD_SIZE):
       prev_cell = None
+      moved = False
       # pr, pc = -1, -1
       for i in range(BOARD_SIZE):
         r, c = next(units)
@@ -96,10 +97,10 @@ class Board:
             # (direction, r, c, cur_cell, pr, pc, prev_cell))
 
           prev_cell.merge(cur_cell)
-
           cur_cell.clear()
+          moved = True
 
-        if i == BOARD_SIZE - 1 and cur_cell.empty():
+        if i == BOARD_SIZE - 1 and cur_cell.empty() and moved:
           dropin_positions.append((r, c))
 
         prev_cell = cur_cell

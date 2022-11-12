@@ -81,7 +81,7 @@ def test_board_move_case1():
       [0, 0, 1, 6],
       [0, 0, 0, 0],
   ]
-  tail_idx = [(3, 0), (3, 1), (3, 2), (3, 3)]
+  tail_idx = [(3, 0), (3, 2), (3, 3)]
   _check_move(b, MoveDirection.UP, cells, tail_idx)
 
   cells = [
@@ -90,7 +90,7 @@ def test_board_move_case1():
       [0, 0, 1, 2],
       [1, 0, 1, 6],
   ]
-  tail_idx = [(0, 0), (0, 1), (0, 2), (0, 3)]
+  tail_idx = [(0, 0), (0, 3)]
   _check_move(b, MoveDirection.DOWN, cells, tail_idx)
 
   cells = [
@@ -108,7 +108,7 @@ def test_board_move_case1():
       [0, 1, 1, 3],
       [0, 0, 1, 3],
   ]
-  tail_idx = [(0, 0), (1, 0), (2, 0), (3, 0)]
+  tail_idx = [(0, 0), (2, 0)]
   _check_move(b, MoveDirection.RIGHT, cells, tail_idx)
 
 
@@ -184,7 +184,7 @@ def test_board_move_right():
       [0, 3, 2, 1],
       [0, 3, 1, 6],
   ]
-  tail_idx = [(0, 0), (1, 0), (2, 0), (3, 0)]
+  tail_idx = [(0, 0), (2, 0), (3, 0)]
   _check_move(b, MoveDirection.RIGHT, cells, tail_idx)
 
 
@@ -274,6 +274,25 @@ def test_available_moves():
   game = ThreesGame(board)
   assert game.get_available_moves() == set(
       [MoveDirection.LEFT, MoveDirection.RIGHT])
+
+
+def _parse_card_string(s):
+  for row in s.split('\n'):
+    if not row:
+      continue
+    yield [int(c.replace('_', '0')) for c in row.split('  ')]
+
+
+def test_drop_in_positions_case_1():
+  card_string = """
+2  3  3  _
+1  3  _  _
+1  _  2  1
+2  _  3  _"""
+  board = Board(make_board(list(_parse_card_string(card_string))))
+  _, dropin_positions = board.move(MoveDirection.LEFT)
+  assert len(dropin_positions) == 3
+  assert dropin_positions == [(0, 3), (2, 3), (3, 3)]
 
 
 def test_game_done_true():
