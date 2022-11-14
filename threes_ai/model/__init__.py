@@ -286,7 +286,7 @@ class DictActor(nn.Module):
       # probs)
       return actions
     else:
-      return logits.argsort(dim=-1, descending=True)[:, 1]
+      return logits.argsort(dim=-1, descending=True)[:, 0]
 
 
 class BaselineLayer(nn.Module):

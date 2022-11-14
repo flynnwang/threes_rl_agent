@@ -17,11 +17,7 @@ def fill_buffers_inplace(buffers: Union[Dict, torch.Tensor],
     for key, val in copy(fill_vals).items():
       fill_buffers_inplace(buffers[key], val, step, key_hint=key)
   else:
-    try:
-      buffers[step, ...] = fill_vals[:]
-    except Exception as e:
-      __import__('ipdb').set_trace()
-      raise e
+    buffers[step, ...] = fill_vals[:]
 
 
 def stack_buffers(buffers: Buffers,
