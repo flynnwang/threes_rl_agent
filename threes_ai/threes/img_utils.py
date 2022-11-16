@@ -11,7 +11,7 @@ BOARD_Y = 240
 CANDIDATE_X = 352
 CANDIDATE_Y = 76
 
-BLACK_THRESHOLD = 70
+BLACK_THRESHOLD = 30
 
 
 def plot_img(img):
@@ -128,8 +128,8 @@ class CandidateCardsExtractor:
       plot_img(card_img)
 
     black_width = self.compute_mid_black_width(card_img)
-    num_cards = int(math.ceil(black_width / 90))
-    logging.debug(
+    num_cards = int(math.ceil(black_width / 45))
+    logging.info(
         f"num_cards={num_cards}, black_width={black_width}, candidate_area_width={card_img.shape[1]}"
     )
     return max(min(num_cards, 3), 1)
@@ -138,7 +138,7 @@ class CandidateCardsExtractor:
     num_cards = self.compute_num_cards_by_width(self.img)
 
     CARD_WIDTH = 50
-    CARD_HEIGHT = 72
+    CARD_HEIGHT = 67
     DELTA_WIDTH = CARD_WIDTH + 23
 
     def w1_(d=0):
@@ -156,9 +156,9 @@ class CandidateCardsExtractor:
       w1 += DELTA_WIDTH
 
       if self.debug:
-        logging.debug(f'shape={c.shape}')
+        logging.info(f'shape={c.shape}')
         plot_img(c)
-      return imgs
+    return imgs
 
 
 class BoardCardsExtractor:
@@ -188,7 +188,7 @@ class BoardCardsExtractor:
         row_imgs.append(c)
 
         if self.debug:
-          logging.debug(f'({i}, {j}), shape={c.shape}')
+          logging.info(f'({i}, {j}), shape={c.shape}')
           plot_img(c)
       imgs.append(row_imgs)
     return imgs
