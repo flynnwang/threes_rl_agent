@@ -233,11 +233,11 @@ class BonusCards:
 
 class NextCard:
 
-  def __init__(self, board):
+  def __init__(self, board, candidate_cards=None):
     self.board = board
     self.deck = Deck()
     self.bonus_cards = BonusCards(board.max_card())
-    self.candidate_cards = None
+    self.candidate_cards = candidate_cards
 
   def peek(self):
     if self.candidate_cards is not None:
@@ -261,9 +261,9 @@ class NextCard:
 
 class ThreesGame:
 
-  def __init__(self, board=None):
+  def __init__(self, board=None, next_card=None):
     self.board = board
-    self.next_card = None
+    self.next_card = next_card
     self.num_step = 0
 
   def reset(self):

@@ -21,3 +21,6 @@ class MoveDirection(Enum):
   RIGHT = auto()
   UP = auto()
   DOWN = auto()
+
+
+ACTION_TO_DIRECTION = dict(enumerate(list(MoveDirection)))

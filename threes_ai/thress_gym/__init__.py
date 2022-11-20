@@ -1,7 +1,8 @@
 import torch
 from typing import Optional
 
-from .env import ThreesEnv
+from ..threes.core import ThreesGame
+from .env import ThreesEnv, ThreesObservedEnv
 from .wrappers import ModelInputWrapper, VecEnv, PytorchEnv, DictEnv
 
 
@@ -20,6 +21,18 @@ def create_env(flags,
     env = create_game_env()
     envs.append(env)
   env = VecEnv(envs)
+  env = PytorchEnv(env, device)
+  env = DictEnv(env)
+  return env
+
+
+# Only `reset()` will be called to get model input.
+def create_test_env(game: ThreesGame, device: torch.device) -> DictEnv:
+  env = ThreesObservedEnv()
+  env.game = game
+
+  env = ModelInputWrapper(env)
+  env = VecEnv([env])
   env = PytorchEnv(env, device)
   env = DictEnv(env)
   return env

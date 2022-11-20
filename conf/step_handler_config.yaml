@@ -1,0 +1,60 @@
+defaults:
+- override hydra/job_logging: default
+- override hydra/hydra_logging: default
+
+hydra:
+  run:
+    dir: ./outputs/${now:%m-%d}/${now:%H-%M-%S}
+
+name: step_handler_runs_v0
+
+## WANDB params
+# The wandb project name
+project: threes-ai
+# The wandb user to log to
+entity: pyflynn
+# The wandb group for the run
+group: step_hanlder_runs
+
+## TRAINING params
+total_steps: 3e9
+num_actors: 7
+num_buffers: 100
+n_actor_envs: 8
+unroll_length: 64
+batch_size: 32
+
+## MODEL params
+model_arch: conv_model
+n_blocks: 16
+hidden_dim: 128
+embedding_dim: 32
+n_merge_layers: 1
+normalize: False
+sum_player_embeddings: False
+use_index_select: False
+rescale_value_input: True
+rescale_se_input: True
+# Conv-specific params
+kernel_size: 3
+
+# MISCELLANEOUS params
+use_mixed_precision: True
+actor_device: cpu
+
+# file_descriptor or file_system
+sharing_strategy: file_system
+disable_wandb: True
+debug: False
+
+load_dir: /Users/flynn.wang/repo/flynn/snapshot/autodl_b16_h128_e32_3e9_3090_update_rule_new_model
+checkpoint_file: 5000003584_weights.pt
+weights_only: False
+n_value_warmup_batches: 0
+
+
+test_img_path: /Users/flynn.wang/repo/flynn/thress_imgs/record_1112/002daf8e-c2a7-4f99-9b7c-b085afb22f0f.jpg
+
+save_img_path: /Users/flynn.wang/repo/flynn/thress_imgs/record_1120
+
+digit_model_ck_path: /Users/flynn.wang/repo/flynn/thress_imgs/models/predict_num_v2.pt

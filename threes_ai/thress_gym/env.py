@@ -8,7 +8,6 @@ from gym import spaces
 from threes_ai.threes.consts import *
 from threes_ai.threes import ThreesGame
 
-ACTION_TO_DIRECTION = dict(enumerate(list(MoveDirection)))
 # DIRECTION_TO_ACTION = {v: k for k, v in ACTION_TO_DIRECTION.items()}
 
 CARD_TO_STATE = dict((c, i) for i, c in enumerate(CARDS))
@@ -21,6 +20,7 @@ class ThreesEnv(gym.Env):
     assert render_mode is None or render_mode in self.metadata["render_modes"]
     self.render_mode = render_mode
     self._seed = seed
+    self.game = None
 
     # For each board position, the state could be one of the card or empty.
     # Same as the candidate card positions.
@@ -145,3 +145,16 @@ class ThreesEnv(gym.Env):
   def render(self):
     if self.render_mode == "console":
       self.game.display()
+
+
+class ThreesObservedEnv(ThreesEnv):
+
+  def step(self, action: int):
+    raise NotImplementedError
+
+  def reset(self):
+    assert self.game is not None, "game object should not be None."
+
+    obs = self._get_obs()
+    info = self._get_info()
+    return obs, info
