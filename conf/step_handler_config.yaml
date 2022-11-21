@@ -58,3 +58,5 @@ test_img_path: /Users/flynn.wang/repo/flynn/thress_imgs/record_1112/002daf8e-c2a
 save_img_path: /Users/flynn.wang/repo/flynn/thress_imgs/record_1120
 
 digit_model_ck_path: /Users/flynn.wang/repo/flynn/thress_imgs/models/predict_num_v2.pt
+
+manual_fix_path: /Users/flynn.wang/repo/flynn/thress_imgs/fix.txt

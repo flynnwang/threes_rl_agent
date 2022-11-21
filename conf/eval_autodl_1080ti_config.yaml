@@ -6,7 +6,7 @@ hydra:
   run:
     dir: ./outputs/${now:%m-%d}/${now:%H-%M-%S}
 
-name: autodl_b16_h128_e32_evaluation_1113_sample_true
+name: autodl_new_rule_model_sample_false
 
 ## WANDB params
 # The wandb project name
@@ -47,8 +47,11 @@ sharing_strategy: file_system
 disable_wandb: False
 debug: False
 
-load_dir: /Users/flynn.wang/repo/flynn/snapshot/autodl_b16_h128_e32_3e9_3090_restart5_dropin_updated
+#load_dir: /Users/flynn.wang/repo/flynn/snapshot/autodl_b16_h128_e32_3e9_3090_restart5_dropin_updated
 #checkpoint_file: 3451566080_weights.pt
-checkpoint_file: 4144709632_weights.pt
+#checkpoint_file: 4144709632_weights.pt
+#
+load_dir: /Users/flynn.wang/repo/flynn/snapshot/autodl_b16_h128_e32_3e9_3090_update_rule_new_model/
+checkpoint_file: 5000003584_weights.pt
 weights_only: False
 n_value_warmup_batches: 0
