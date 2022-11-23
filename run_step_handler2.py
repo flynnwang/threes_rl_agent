@@ -7,21 +7,32 @@ import os
 import cv2
 import numpy as np
 import zmq
+import hydra
+from omegaconf import OmegaConf, DictConfig
 
 from threes_ai.threes.hanlder import StepHandler
 
+handler = None
+
 
 def on_img_received(img, flags):
-  # Save img to a tmp folder for training models.
-  img_path = os.path.join(args.save_img_path, str(uuid.uuid4()) + ".jpg")
-  cv2.imwrite(img_path, img)
+  if not os.path.exists(flags.save_img_path):
+    os.makedirs(flags.save_img_path)
 
-  handler = StepHandler(flags)
+  # Save img to a tmp folder for training models.
+  img_path = os.path.join(flags.save_img_path, str(uuid.uuid4()) + ".jpg")
+  cv2.imwrite(img_path, img)
+  logging.info("Image saved: %s", img_path)
+
+  global handler
+  if handler is None:
+    handler = StepHandler(flags)
+
   handler.execute(img_path)
 
 
 @hydra.main(config_path="conf", config_name="step_handler_config")
-def main():
+def main(flags: DictConfig):
 
   #  Socket to talk to server
   logging.info("Connecting to pi image server…")
@@ -30,15 +41,14 @@ def main():
   socket.connect("tcp://192.168.31.207:5555")
 
   while True:
-    input("request...pi...")
+    logging.info("request pi...")
     socket.send(b'get')
 
     # Get the reply.
     buf = socket.recv_pyobj()
     img = cv2.imdecode(np.frombuffer(buf, np.uint8), cv2.IMREAD_COLOR)
-    logging.info("Image received: ", img.shape)
 
-    on_img_received(img, args)
+    on_img_received(img, flags)
 
 
 if __name__ == "__main__":

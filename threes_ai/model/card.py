@@ -56,4 +56,4 @@ def predict_digit(model, img, class_names=CLASS_NAMES):
   score = prediction[class_id].item()
   category_name = class_names[class_id]
 
-  return category_name, score
+  return category_name, (score, prediction)

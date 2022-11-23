@@ -5,8 +5,8 @@ import numpy as np
 from matplotlib import pyplot as plt
 import cv2
 
-BOARD_X = 137
-BOARD_Y = 240
+BOARD_X = 137 + 6
+BOARD_Y = 240 + 7
 
 CANDIDATE_X = 352
 CANDIDATE_Y = 76
@@ -34,7 +34,7 @@ class CardExtractor:
 
   def detect_ipad_display(self, img):
     CUT_THRESHOLD = 80
-    MIN_AREA = 20000
+    MIN_AREA = 100000
     MAX_AREA = 1000000
 
     gray = cv2.cvtColor(img, cv2.COLOR_RGB2GRAY)
@@ -71,6 +71,8 @@ class CardExtractor:
     img_rot = cv2.warpAffine(img, M, (width, height))
 
     x, y = size
+    if x < y:
+      x, y = y, x
     img_crop = cv2.getRectSubPix(img_rot, (y, x), center)
     return img_rot, img_crop
 

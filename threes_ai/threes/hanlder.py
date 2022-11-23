@@ -74,7 +74,7 @@ class StepHandler:
         numbers = [board.get_card(i, j) for j in range(4)]
         f.write(numbers_to_line(numbers))
 
-    input('check on file: ' + self.flags.manual_fix_path)
+    input('check on file: ' + self.flags.manual_fix_path + '\n')
 
     def line_to_numbers(line):
       return [int(x) for x in line.strip().split(',')]
@@ -91,14 +91,19 @@ class StepHandler:
 
   def execute(self, img_path, manual_fix=True):
     candi_cards, board = self.observe(img_path)
+
+    # TODO: remove
+    next_card = NextCard(board, candidate_cards=candi_cards)
+    game = ThreesGame(board, next_card)
+    game.display()
+
     if manual_fix:
       candi_cards, board = self.wait_user_input(candi_cards, board)
 
     next_card = NextCard(board, candidate_cards=candi_cards)
     game = ThreesGame(board, next_card)
 
-    action = self.step(game)
-    move = ACTION_TO_DIRECTION[int(action)]
+    # action = self.step(game)
+    # move = ACTION_TO_DIRECTION[int(action)]
 
-    game.display()
-    logging.info(f"action: {int(action)}, move={move}")
+    # logging.info(f"action: {int(action)}, move={move}")
