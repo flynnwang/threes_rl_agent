@@ -3,7 +3,9 @@ import argparse
 import time
 import uuid
 import os
+import shutil
 
+import requests
 import cv2
 import numpy as np
 import zmq
@@ -14,15 +16,29 @@ from threes_ai.threes.hanlder import StepHandler
 
 handler = None
 
+IMAGE_URL = "http://192.168.31.207:8000/board.jpg"
 
-def on_img_received(img, flags):
+
+def download_img(img_path):
+  r = requests.get(IMAGE_URL, stream=True)
+  if r.status_code == 200:
+    with open(img_path, 'wb') as f:
+      r.raw.decode_content = True
+      shutil.copyfileobj(r.raw, f)
+    logging.info("Image downloaded: %s", img_path)
+    return True
+  logging.error("Failed to download image file!")
+  return False
+
+
+def on_img_received(flags):
   if not os.path.exists(flags.save_img_path):
     os.makedirs(flags.save_img_path)
 
   # Save img to a tmp folder for training models.
   img_path = os.path.join(flags.save_img_path, str(uuid.uuid4()) + ".jpg")
-  cv2.imwrite(img_path, img)
-  logging.info("Image saved: %s", img_path)
+  if not download_img(img_path):
+    return
 
   global handler
   if handler is None:
@@ -45,10 +61,10 @@ def main(flags: DictConfig):
     socket.send(b'get')
 
     # Get the reply.
-    buf = socket.recv_pyobj()
-    img = cv2.imdecode(np.frombuffer(buf, np.uint8), cv2.IMREAD_COLOR)
+    resp = socket.recv()
+    logging.info(resp)
 
-    on_img_received(img, flags)
+    on_img_received(flags)
     input("wait for moving...")
 
 

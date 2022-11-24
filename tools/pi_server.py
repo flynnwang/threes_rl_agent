@@ -18,6 +18,7 @@ def main():
   # Start a preview and let the camera warm up for 2 seconds
   camera.start_preview()
   time.sleep(2)
+  camera.capture('board.jpg')
 
   while True:
     #  Wait for next request from client
@@ -25,7 +26,7 @@ def main():
     print("Received request: %s" % req, ' at ', datetime.now())
 
     camera.capture('board.jpg')
-    socket.send("OK")
+    socket.send(b"OK")
 
 
 if __name__ == "__main__":
