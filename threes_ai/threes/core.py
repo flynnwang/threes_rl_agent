@@ -307,7 +307,7 @@ class ThreesGame:
       card = self.next_card.next()
       self.board.put(i, j, card)
 
-  def display(self):
+  def display(self, start_pos=None):
     max_card = self.board.max_card()
     width = len(str(abs(max_card)))
     fmt = "{0: <%s}" % width
@@ -318,9 +318,16 @@ class ThreesGame:
     for i in range(BOARD_SIZE):
       for j in range(BOARD_SIZE):
         c = self.board.cells[i][j]
+
+        card_str = ""
         if c.has_card():
-          print(fmt.format(c.card), end='')
+          card_str = fmt.format(c.card)
         else:
-          print('_' * width, end='')
-        print('  ', end='')
+          card_str = '_' * width
+        print(card_str, end='')
+
+        if start_pos and (i, j) == start_pos:
+          print('* ', end='')
+        else:
+          print('  ', end='')
       print()

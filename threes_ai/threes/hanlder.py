@@ -4,7 +4,9 @@ import os
 import time
 import uuid
 from typing import List, Optional
+from pathlib import Path
 
+import torch
 import cv2
 import numpy as np
 
@@ -15,11 +17,14 @@ from threes_ai.model.card import create_digit_model, predict_digit
 from threes_ai.model import create_model
 from threes_ai.thress_gym import create_test_env, create_game_env
 
-# @dataclass
-# class StepState:
 
-# board_cards: List[List[int]]
-# candi_cards: List[int]
+def board_diff(observed_board, predicted_board, dropin_positions):
+  for (r, c) in dropin_positions:
+    ob = observed_board.get_card(r, c)
+    pred = predicted_board.get_card(r, c)
+    if ob != pred:
+      return (r, c), True
+  return None, False
 
 
 class StepHandler:
@@ -35,8 +40,17 @@ class StepHandler:
     logging.info("actor model loading...")
     game_env = create_game_env()
     self.actor_model = create_model(flags, game_env, flags.actor_device)
+
+    checkpoint_state = torch.load(Path(flags.load_dir) / flags.checkpoint_file,
+                                  map_location=torch.device("cpu"))
+    logging.info("Loading model parameters from checkpoint state...")
+    self.actor_model.load_state_dict(checkpoint_state["model_state_dict"])
     self.actor_model.eval()
     logging.info("step handler ready!")
+
+    self.game = None
+    self.predictd_board = None
+    self.dropin_positions = None
 
   def observe(self, img_path):
     ce = CardExtractor(img_path)
@@ -92,18 +106,36 @@ class StepHandler:
   def execute(self, img_path, manual_fix=True):
     candi_cards, board = self.observe(img_path)
 
-    # TODO: remove
-    next_card = NextCard(board, candidate_cards=candi_cards)
-    game = ThreesGame(board, next_card)
-    game.display()
+    pos = None
+    game_board = board
+    if self.game is not None:
+      game_board = self.game.board
+
+      # Fill in new cards if diff exists.
+      pos, exists = board_diff(board, self.predictd_board, self.dropin_positions)
+      if exists:
+        x, y = pos
+        self.game.board.cells[x][y].card = board.get_card(x, y)
+        logging.info(f"Fill in new card at ({x}, {y}): {board.get_card(x, y)}")
+
+    next_card = NextCard(game_board, candidate_cards=candi_cards)
+    self.game = ThreesGame(game_board, next_card)
+    self.game.display(start_pos=pos)
 
     if manual_fix:
-      candi_cards, board = self.wait_user_input(candi_cards, board)
+      candi_cards, board = self.wait_user_input(candi_cards, game_board)
+      next_card = NextCard(board, candidate_cards=candi_cards)
+      self.game = ThreesGame(board, next_card)
+      self.game.display(start_pos=pos)
 
-    next_card = NextCard(board, candidate_cards=candi_cards)
-    game = ThreesGame(board, next_card)
+    action = self.step(self.game)
+    direction = ACTION_TO_DIRECTION[int(action)]
+    logging.info(f"action: {int(action)}, move={direction}")
 
-    # action = self.step(game)
-    # move = ACTION_TO_DIRECTION[int(action)]
+    # Attempt move and get dropin_positions.
+    new_board, dropin_positions = self.game.board.move(direction)
+    self.predictd_board = new_board
+    self.dropin_positions = dropin_positions
 
-    # logging.info(f"action: {int(action)}, move={move}")
+    # Move board without dropin new cards.
+    self.game.board = new_board

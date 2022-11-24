@@ -5,11 +5,11 @@ import numpy as np
 from matplotlib import pyplot as plt
 import cv2
 
-BOARD_X = 137 + 6
-BOARD_Y = 240 + 7
+BOARD_X = 137 + 2
+BOARD_Y = 240 + 9
 
 CANDIDATE_X = 352
-CANDIDATE_Y = 76
+CANDIDATE_Y = 76 + 3
 
 BLACK_THRESHOLD = 30
 
@@ -170,9 +170,9 @@ class BoardCardsExtractor:
     self.debug = debug
 
   def extract(self):
-    CARD_WIDTH = 109
+    CARD_WIDTH = 107
     CARD_HEIGHT = 146
-    MARGIN_W = 14
+    MARGIN_W = 16
     MARGIN_H = 20
 
     imgs = []

@@ -44,10 +44,12 @@ preprocess = transforms.Compose([
 
 
 def predict_digit(model, img, class_names=CLASS_NAMES):
-  import torchvision.transforms.functional as transform
-  img = transform.to_pil_image(img)
+  # convert from opencv image to PIL image
+  from PIL import Image
+  cv2_img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+  pil_img = Image.fromarray(cv2_img)
 
-  batch = preprocess(img).unsqueeze(0)
+  batch = preprocess(pil_img).unsqueeze(0)
 
   # Step 4: Use the model and print the predicted category
   prediction = model(batch).squeeze(0).softmax(0)

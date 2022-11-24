@@ -286,6 +286,13 @@ class DictActor(nn.Module):
       # probs)
       return actions
     else:
+      policy = Categorical(logits=logits)
+      if policy.probs.shape[0] == 1:
+        probs = list(policy.probs[0, :])
+        for a, prob in enumerate(probs):
+          d = str(ACTION_TO_DIRECTION[a]).split('.')[-1]
+          logging.info(f"prob({d}) = {float(prob):.3f}")
+
       return logits.argsort(dim=-1, descending=True)[:, 0]
 
 

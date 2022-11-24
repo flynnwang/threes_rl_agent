@@ -49,6 +49,7 @@ def main(flags: DictConfig):
     img = cv2.imdecode(np.frombuffer(buf, np.uint8), cv2.IMREAD_COLOR)
 
     on_img_received(img, flags)
+    input("wait for moving...")
 
 
 if __name__ == "__main__":
