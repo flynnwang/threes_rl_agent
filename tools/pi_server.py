@@ -1,6 +1,5 @@
 # pi
 
-import io
 import time
 import tempfile
 from datetime import datetime
@@ -25,10 +24,8 @@ def main():
     req = socket.recv()
     print("Received request: %s" % req, ' at ', datetime.now())
 
-    buf = io.BytesIO()
-    camera.capture(buf, 'jpeg')
-
-    socket.send_pyobj(buf.getvalue())
+    camera.capture('board.jpg')
+    socket.send("OK")
 
 
 if __name__ == "__main__":
