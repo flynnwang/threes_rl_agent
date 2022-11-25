@@ -48,7 +48,7 @@ class ThreesEnv(gym.Env):
     candidate_cards_obs = np.zeros(MAX_CANDIDATE_CARDS_NUM, dtype=int)
     candidate_cards = self.game.next_card.peek()
     for i, card in enumerate(candidate_cards):
-      candidate_cards_obs[i] = card
+      candidate_cards_obs[i] = CARD_TO_STATE[card]
 
     return {"board": board_obs, "candidate_cards": candidate_cards_obs}
 

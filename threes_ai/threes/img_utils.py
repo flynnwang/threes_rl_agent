@@ -5,7 +5,7 @@ import numpy as np
 from matplotlib import pyplot as plt
 import cv2
 
-BOARD_X = 137 + 2
+BOARD_X = 137 + 5
 BOARD_Y = 240 + 9
 
 CANDIDATE_X = 352
