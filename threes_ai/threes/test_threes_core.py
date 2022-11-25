@@ -3,16 +3,40 @@ from .consts import *
 
 
 def test_bonus_card_not_active():
-  assert not BonusCards(24).is_active(), dir(BonusCards())
-  assert not BonusCards(12).is_active()
-  assert not BonusCards(6).is_active()
-  assert not BonusCards(3).is_active()
+  cells = [
+      [24] * 4,
+      [24] * 4,
+      [24] * 4,
+      [24] * 4,
+  ]
+  board = Board(make_board(cells))
+  game = ThreesGame(board)
+  assert not BonusCards(game).is_active()
 
 
 def test_bonus_card_is_active():
-  assert BonusCards(48).is_active()
+  cells = [
+      [48] * 4,
+      [48] * 4,
+      [48] * 4,
+      [48] * 4,
+  ]
+  board = Board(make_board(cells))
+  game = ThreesGame(board)
+  assert BonusCards(game).is_active()
 
-  bc = BonusCards(384)
+
+def test_active_bonus_cards():
+  cells = [
+      [384] * 4,
+      [384] * 4,
+      [384] * 4,
+      [384] * 4,
+  ]
+  board = Board(make_board(cells))
+  game = ThreesGame(board)
+
+  bc = BonusCards(game)
   assert bc.is_active()
   assert bc.get_active_bonus_cards() == [6, 12, 24, 48]
 

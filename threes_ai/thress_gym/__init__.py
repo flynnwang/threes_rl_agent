@@ -1,7 +1,7 @@
 import torch
 from typing import Optional
 
-from ..threes.core import ThreesGame
+from threes_ai.threes.core import ThreesGame
 from .env import ThreesEnv, ThreesObservedEnv
 from .wrappers import ModelInputWrapper, VecEnv, PytorchEnv, DictEnv
 

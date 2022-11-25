@@ -197,8 +197,12 @@ class Deck:
 
 class BonusCards:
 
-  def __init__(self, max_card):
-    self.max_card = max_card
+  def __init__(self, game):
+    self.game = game
+
+  @property
+  def max_card(self):
+    return self.game.board.max_card()
 
   def is_active(self):
     return self.max_card >= 48
@@ -227,24 +231,17 @@ class BonusCards:
     candidate_cards.sort()
     return candidate_cards
 
-  def update(self, max_card):
-    self.max_card = max_card
-
 
 class NextCard:
 
-  def __init__(self, board, candidate_cards=None):
-    self.board = board
+  def __init__(self, game, candidate_cards=None):
     self.deck = Deck()
-    self.bonus_cards = BonusCards(board.max_card())
+    self.bonus_cards = BonusCards(game)
     self.candidate_cards = candidate_cards
 
   def peek(self):
     if self.candidate_cards is not None:
       return self.candidate_cards
-
-    max_card = self.board.max_card()
-    self.bonus_cards.update(max_card)
 
     if self.bonus_cards.is_active() and self.bonus_cards.use_bonus_card():
       self.candidate_cards = self.bonus_cards.gen_candidate_cards()
@@ -268,7 +265,7 @@ class ThreesGame:
 
   def reset(self):
     self.board = Board()
-    self.next_card = NextCard(self.board)
+    self.next_card = NextCard(self)
     self._fill_initial_board()
 
   def get_available_moves(self):
