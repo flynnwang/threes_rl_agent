@@ -139,3 +139,4 @@ class StepHandler:
 
     # Move board without dropin new cards.
     self.game.board = new_board
+    return direction

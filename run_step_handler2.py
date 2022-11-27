@@ -4,6 +4,7 @@ import time
 import uuid
 import os
 import shutil
+import random
 
 import requests
 import cv2
@@ -11,12 +12,28 @@ import numpy as np
 import zmq
 import hydra
 from omegaconf import OmegaConf, DictConfig
+from playsound import playsound
 
+from threes_ai.threes.consts import MoveDirection
 from threes_ai.threes.hanlder import StepHandler
 
 handler = None
 
 IMAGE_URL = "http://192.168.31.207:8000/board.jpg"
+
+
+SOUND_DIR = "/Users/flynn.wang/repo/flynn/thress_imgs/move_sound"
+
+
+def random_sound(dir: MoveDirection):
+  dir = str(dir).split('.')[-1]
+  sound_dir = os.path.join(SOUND_DIR, dir)
+
+  sound_files = os.listdir(sound_dir)
+  sound_files = [os.path.join(SOUND_DIR, dir, x)
+                 for x in sound_files if x.endswith("m4a")]
+  sound_file = random.choice(sound_files)
+  playsound(sound_file)
 
 
 def download_img(img_path):
@@ -44,7 +61,8 @@ def on_img_received(flags):
   if handler is None:
     handler = StepHandler(flags)
 
-  handler.execute(img_path)
+  direction = handler.execute(img_path)
+  random_sound(direction)
 
 
 @hydra.main(config_path="conf", config_name="step_handler_config")

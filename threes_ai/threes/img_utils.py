@@ -5,11 +5,11 @@ import numpy as np
 from matplotlib import pyplot as plt
 import cv2
 
-BOARD_X = 137 + 5
-BOARD_Y = 240 + 9
+BOARD_X = 137 + 1
+BOARD_Y = 240 + 5
 
-CANDIDATE_X = 352
-CANDIDATE_Y = 76 + 3
+CANDIDATE_X = 352 + -3
+CANDIDATE_Y = 76 + 1
 
 BLACK_THRESHOLD = 30
 

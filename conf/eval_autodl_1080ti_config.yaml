@@ -6,7 +6,7 @@ hydra:
   run:
     dir: ./outputs/${now:%m-%d}/${now:%H-%M-%S}
 
-name: autodl_new_rule_model_sample_false
+name: autodl_new_rule_model_with_bonus_card_fix
 
 ## WANDB params
 # The wandb project name
