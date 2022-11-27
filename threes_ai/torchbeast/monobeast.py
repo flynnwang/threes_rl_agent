@@ -116,11 +116,11 @@ def compute_teacher_kl_loss(learner_policy_logits: torch.Tensor,
   kl_div = F.kl_div(learner_policy_log_probs,
                     teacher_policy.detach(),
                     reduction="none",
-                    log_target=False).sum(dim=-1)
+                    log_target=False)
   assert actions_taken_mask.shape == kl_div.shape, (actions_taken_mask.shape,
                                                     kl_div.shape)
   kl_div_masked = kl_div * actions_taken_mask.float()
-  return kl_div_masked.sum(dim=-1).squeeze(dim=-1)
+  return kl_div_masked.sum(dim=-1)
 
 
 def reduce(losses: torch.Tensor, reduction: str) -> torch.Tensor:
@@ -350,7 +350,8 @@ def learn(
 
       if flags.use_teacher:
         teacher_kl_loss = compute_teacher_kl_loss(
-            learner_policy_logits, teacher_outputs["policy_logits"])
+            learner_policy_logits, teacher_outputs["policy_logits"],
+            actions_taken_mask)
       else:
         teacher_kl_loss = torch.zeros_like(combined_teacher_kl_loss)
 
@@ -405,8 +406,10 @@ def learn(
       teacher_kl_loss = flags.teacher_kl_cost * reduce(
           combined_teacher_kl_loss, reduction=flags.reduction)
       if flags.use_teacher:
+        # (unroll, batch size, 1) => (unroll, batch size)
+        teacher_baseline = teacher_outputs["baseline"][:, :, 0]
         teacher_baseline_loss = flags.teacher_baseline_cost * compute_baseline_loss(
-            values, teacher_outputs["baseline"], reduction=flags.reduction)
+            values, teacher_baseline, reduction=flags.reduction)
       else:
         teacher_baseline_loss = torch.zeros_like(baseline_loss)
       entropy_loss = flags.entropy_cost * reduce(combined_learner_entropy,
@@ -535,18 +538,6 @@ def train(flags):
   free_queue = mp.SimpleQueue()
   full_queue = mp.SimpleQueue()
 
-  # for debug act
-  # free_queue.put(0)
-  # act(
-  # flags,
-  # teacher_flags,
-  # 0,
-  # free_queue,
-  # full_queue,
-  # actor_model,
-  # buffers,
-  # )
-
   for actor_id in range(flags.num_actors):
     actor_start = threading.Thread if flags.debug else mp.Process
     actor = actor_start(
@@ -585,10 +576,7 @@ def train(flags):
       raise ValueError(
           "It does not make sense to use teacher when teacher_kl_cost <= 0 "
           "and teacher_baseline_cost <= 0")
-    teacher_model = create_model(flags,
-                                 flags.learner_device,
-                                 teacher_model_flags=teacher_flags,
-                                 is_teacher_model=True)
+    teacher_model = create_model(teacher_flags, game_env, flags.learner_device)
     teacher_model.load_state_dict(
         torch.load(Path(flags.teacher_load_dir) /
                    flags.teacher_checkpoint_file,
