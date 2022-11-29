@@ -119,7 +119,10 @@ def compute_teacher_kl_loss(learner_policy_logits: torch.Tensor,
                     log_target=False)
   assert actions_taken_mask.shape == kl_div.shape, (actions_taken_mask.shape,
                                                     kl_div.shape)
-  kl_div_masked = kl_div * actions_taken_mask.float()
+
+  kl_div_masked = torch.where(actions_taken_mask > 0, kl_div,
+                              torch.zeros_like(kl_div))
+  # kl_div_masked = kl_div * actions_taken_mask.float()
   return kl_div_masked.sum(dim=-1)
 
 

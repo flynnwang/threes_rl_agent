@@ -4,10 +4,10 @@ defaults:
 
 hydra:
   run:
-    #dir: /root/autodl-tmp/outputs/${now:%m-%d}/${now:%H-%M-%S}
-    dir: ./outputs/${now:%m-%d}/${now:%H-%M-%S}
+    dir: /root/autodl-tmp/outputs/${now:%m-%d}/${now:%H-%M-%S}
+    #dir: ./outputs/${now:%m-%d}/${now:%H-%M-%S}
 
-name: autodl_b16_h128_e32_2e9_3090_restart3
+name: autodl_b32_h128_e32_5e9_teacher
 
 ## WANDB params
 # The wandb project name
@@ -23,15 +23,15 @@ reward_space_kwargs: {}
 
 ## TRAINING params
 total_steps: 5e9
-num_actors: 1
-n_actor_envs: 8
+num_actors: 14
+n_actor_envs: 128
 unroll_length: 16
-batch_size: 32
+batch_size: 256
 discounting: 0.999
 
 ## MODEL params
 model_arch: conv_model
-n_blocks: 16
+n_blocks: 32
 hidden_dim: 128
 embedding_dim: 32
 n_merge_layers: 1
@@ -64,15 +64,17 @@ reduction: sum
 
 # Pretrained model for KL loss
 use_teacher: True
-teacher_load_dir: /Users/flynn.wang/repo/flynn/snapshot/autodl_b16_h128_e32_3e9_3090_update_rule_new_model
-teacher_checkpoint_file: 5000003584_weights.pt
+#teacher_load_dir: /root/autodl-tmp/outputs/11-26/08-59-57/
+#teacher_checkpoint_file: 1613443072_weights.pt
+teacher_load_dir: /root/autodl-tmp/outputs/11-27/23-28-57/
+teacher_checkpoint_file: 1182961664_weights.pt
 
 # MISCELLANEOUS params
 use_mixed_precision: True
-#actor_device: cuda
-#learner_device: cuda
-actor_device: cpu
-learner_device: cpu
+actor_device: cuda
+learner_device: cuda
+#actor_device: cpu
+#learner_device: cpu
 model_log_freq: 100
 # file_descriptor or file_system
 sharing_strategy: file_system
