@@ -7,7 +7,7 @@ hydra:
     dir: /root/autodl-tmp/outputs/${now:%m-%d}/${now:%H-%M-%S}
     #dir: ./outputs/${now:%m-%d}/${now:%H-%M-%S}
 
-name: autodl_b16_h128_e32_5e9_teacher_batch64
+name: autodl_b16_h128_e32_5e9_teacher_batch16
 
 ## WANDB params
 # The wandb project name
@@ -23,10 +23,10 @@ reward_space_kwargs: {}
 
 ## TRAINING params
 total_steps: 5e9
-num_actors: 15
-n_actor_envs: 128
+num_actors: 4
+n_actor_envs: 16
 unroll_length: 16
-batch_size: 64
+batch_size: 16
 discounting: 0.999
 
 ## MODEL params
