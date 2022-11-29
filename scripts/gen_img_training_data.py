@@ -1,5 +1,6 @@
 import argparse
 import os
+import logging
 
 import cv2
 from tqdm import tqdm
@@ -23,9 +24,14 @@ def gen_imgs(input_path, output_path, candidate_only=False):
 
     uuid = f.split('.')[0]
     img_path = os.path.join(input_path, f)
-    ce = CardExtractor(img_path)
 
-    candi_imgs, board_imgs = ce.extract()
+    try:
+      ce = CardExtractor(img_path)
+      candi_imgs, board_imgs = ce.extract()
+    except ValueError:
+      logging.warning("failed to parse img: %s", img_path)
+      continue
+
     for i, img in enumerate(candi_imgs):
       out_path = os.path.join(candi_out_path, f"{uuid}_{i}.jpg")
       cv2.imwrite(out_path, img)

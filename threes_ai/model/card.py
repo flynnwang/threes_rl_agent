@@ -15,15 +15,16 @@ import cv2
 
 from torchvision.models import resnet50, ResNet50_Weights
 
-NUM_CLASSES = 11
-CLASS_NAMES = ['0', '1', '12', '192', '2', '24', '3', '384', '48', '6', '96']
+NUM_CLASSES = 12
+CLASS_NAMES = [
+    '0', '1', '12', '192', '2', '24', '3', '384', '48', '6', '768', '96'
+]
 
 
 def create_digit_model(checkpoint_path: str,
                        num_classes: int = NUM_CLASSES,
                        device=torch.device('cpu')):
   model = models.resnet50(weights=ResNet50_Weights.IMAGENET1K_V2)
-  model.eval()
 
   num_ftrs = model.fc.in_features
 
@@ -33,6 +34,7 @@ def create_digit_model(checkpoint_path: str,
   checkpoint_state = torch.load(checkpoint_path, map_location=device)
   model.load_state_dict(checkpoint_state['model_state_dict'])
   model = model.to(device)
+  model.eval()
   return model
 
 
