@@ -21,15 +21,19 @@ import copy
 import cv2
 from tqdm import tqdm
 
-DATA_DIR = '/Users/flynn.wang/repo/flynn/thress_imgs/record_1124_target'
-CHECKPOINT_PATH = "/Users/flynn.wang/repo/flynn/thress_imgs/models/predict_num_v1129_v0.pt"
+# DATA_DIR = '/Users/flynn.wang/repo/flynn/thress_imgs/record_1124_target'
+# CHECKPOINT_PATH = "/Users/flynn.wang/repo/flynn/thress_imgs/models/predict_num_v1129_v0.pt"
 
-# device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
-device = "cpu"
+DATA_DIR = '/root/autodl-tmp/data/digits_1129'
+CHECKPOINT_PATH = "/root/autodl-tmp/data/digits_1129/predict_num_v1129_v0.pt"
+
+device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+# device = "cpu"
 
 
 def train_model(model,
                 dataloaders,
+                dataset_sizes,
                 criterion,
                 optimizer,
                 scheduler,
@@ -105,11 +109,12 @@ def train_model(model,
 def main():
   # Data augmentation and normalization for training
   # Just normalization for validation
+  img_size = (224, 224)
   data_transforms = {
       'train':
       transforms.Compose([
-          transforms.Resize(240),
-          transforms.RandomResizedCrop(224,
+          transforms.Resize(img_size),
+          transforms.RandomResizedCrop(img_size,
                                        scale=(0.95, 1.05),
                                        ratio=(0.95, 1.05)),
           transforms.ToTensor(),
@@ -117,7 +122,7 @@ def main():
       ]),
       'val':
       transforms.Compose([
-          transforms.Resize(224),
+          transforms.Resize(img_size),
           transforms.ToTensor(),
           transforms.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])
       ]),
@@ -133,10 +138,11 @@ def main():
       x: torch.utils.data.DataLoader(image_datasets[x],
                                      batch_size=32,
                                      shuffle=True,
-                                     num_workers=8)
+                                     num_workers=4)
       for x in dataset_names
   }
   dataset_sizes = {x: len(image_datasets[x]) for x in dataset_names}
+  print(dataset_sizes)
   class_names = image_datasets['train'].classes
 
   print('number of classes: ', len(class_names))
@@ -160,13 +166,14 @@ def main():
   optimizer_ft = optim.Adam(model_ft.parameters(), lr=0.0005)
 
   # Decay LR by a factor of 0.1 every 7 epochs
-  exp_lr_scheduler = lr_scheduler.StepLR(optimizer_ft, step_size=5, gamma=0.1)
+  exp_lr_scheduler = lr_scheduler.StepLR(optimizer_ft, step_size=1, gamma=0.1)
   model_ft = train_model(model_ft,
                          dataloaders,
+                         dataset_sizes,
                          criterion,
                          optimizer_ft,
                          exp_lr_scheduler,
-                         num_epochs=15)
+                         num_epochs=3)
 
   torch.save({
       "model_state_dict": model_ft.state_dict(),
