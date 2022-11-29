@@ -7,7 +7,7 @@ hydra:
     dir: /root/autodl-tmp/outputs/${now:%m-%d}/${now:%H-%M-%S}
     #dir: ./outputs/${now:%m-%d}/${now:%H-%M-%S}
 
-name: autodl_b32_h128_e32_5e9_teacher
+name: autodl_b16_h128_e32_5e9_teacher_batch64
 
 ## WANDB params
 # The wandb project name
@@ -23,15 +23,15 @@ reward_space_kwargs: {}
 
 ## TRAINING params
 total_steps: 5e9
-num_actors: 14
+num_actors: 15
 n_actor_envs: 128
 unroll_length: 16
-batch_size: 256
+batch_size: 64
 discounting: 0.999
 
 ## MODEL params
 model_arch: conv_model
-n_blocks: 32
+n_blocks: 16
 hidden_dim: 128
 embedding_dim: 32
 n_merge_layers: 1
@@ -78,8 +78,8 @@ learner_device: cuda
 model_log_freq: 100
 # file_descriptor or file_system
 sharing_strategy: file_system
-#disable_wandb: False
-disable_wandb: True
+disable_wandb: False
+#disable_wandb: True
 debug: False
 
 #load_dir:
