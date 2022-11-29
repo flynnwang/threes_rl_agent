@@ -21,7 +21,6 @@ handler = None
 
 IMAGE_URL = "http://192.168.31.207:8000/board.jpg"
 
-
 SOUND_DIR = "/Users/flynn.wang/repo/flynn/thress_imgs/move_sound"
 
 
@@ -30,18 +29,19 @@ def random_sound(dir: MoveDirection):
   sound_dir = os.path.join(SOUND_DIR, dir)
 
   sound_files = os.listdir(sound_dir)
-  sound_files = [os.path.join(SOUND_DIR, dir, x)
-                 for x in sound_files if x.endswith("m4a")]
+  sound_files = [
+      os.path.join(SOUND_DIR, dir, x) for x in sound_files if x.endswith("m4a")
+  ]
   sound_file = random.choice(sound_files)
   playsound(sound_file)
 
 
 def download_img(img_path):
-  r = requests.get(IMAGE_URL, stream=True)
+  r = requests.get(IMAGE_URL)
   if r.status_code == 200:
+    img_data = r.content
     with open(img_path, 'wb') as f:
-      r.raw.decode_content = True
-      shutil.copyfileobj(r.raw, f)
+      shutil.copyfileobj(img_data, f)
     logging.info("Image downloaded: %s", img_path)
     return True
   logging.error("Failed to download image file!")
