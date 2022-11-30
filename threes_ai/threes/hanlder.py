@@ -112,11 +112,12 @@ class StepHandler:
       game_board = self.game.board
 
       # Fill in new cards if diff exists.
-      pos, exists = board_diff(board, self.predictd_board, self.dropin_positions)
+      pos, exists = board_diff(board, self.predictd_board,
+                               self.dropin_positions)
       if exists:
         x, y = pos
         self.game.board.cells[x][y].card = board.get_card(x, y)
-        logging.info(f"Fill in new card at ({x}, {y}): {board.get_card(x, y)}")
+        logging.info(f"New card at ({x}, {y}): {board.get_card(x, y)}")
 
     next_card = NextCard(game_board, candidate_cards=candi_cards)
     self.game = ThreesGame(game_board, next_card)

@@ -131,7 +131,7 @@ class CandidateCardsExtractor:
 
     black_width = self.compute_mid_black_width(card_img)
     num_cards = int(math.ceil(black_width / 45))
-    logging.info(
+    logging.debug(
         f"num_cards={num_cards}, black_width={black_width}, candidate_area_width={card_img.shape[1]}"
     )
     return max(min(num_cards, 3), 1)
