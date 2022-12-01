@@ -107,21 +107,32 @@ class ThreesEnv(gym.Env):
 
     # num_merged_card = 0
     # num_card_after_moving = info['num_card']
+
     # if moved:
     # # for a successful move, one card will be added to the board.
     # num_card_after_moving -= 1
-    # num_merged_card = num_card_before_moving - num_card_after_moving
     # reward = num_merged_card
     # r1 = num_merged_card / 50.0
 
     # reward /= 500.0  # Given that we're targeting this max score
 
     def reward_score(r):
-      return (r / 6)
+      return (r / 3000)
 
     merge_sum = self.game.board.merge_sum
     reward = reward_score(merge_sum) if merge_sum > 0 else 0
-    reward /= 500.0  # Given that we're targeting this max score
+
+    # empty_before = (16 - num_card_before_moving)
+    # empty_after = (16 - num_card_after_moving)
+    # num_lost_cells = (empty_before - empty_after)
+
+    # penality = 0
+    # if num_lost_cells > 0:
+    # penality = -reward_score(num_lost_cells * 3)
+    # reward += penality
+    # print(
+    # f"lost_cells={num_lost_cells}, penality={penality}, card_before={num_card_before_moving}, card_after={num_card_after_moving}"
+    # )
 
     # print("num_merged=%s, r1=%s, r2=%s, merge_sum=%s" %
     # (num_merged_card, r1, reward, merge_sum))

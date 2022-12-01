@@ -15,8 +15,8 @@ from threes_ai.threes.hanlder import StepHandler
 
 handler = None
 
-# IMAGE_URL = "http://192.168.31.207:8000/board.jpg"
-IMAGE_URL = "http://127.0.0.1:5000/board.jpg"
+IMAGE_URL = "http://192.168.31.207:5000/board.jpg"
+# IMAGE_URL = "http://127.0.0.1:5000/board.jpg"
 
 SOUND_DIR = "/Users/flynn.wang/repo/flynn/thress_imgs/move_sound"
 
