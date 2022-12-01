@@ -7,7 +7,7 @@ hydra:
     dir: /root/autodl-tmp/outputs/${now:%m-%d}/${now:%H-%M-%S}
     #dir: ./outputs/${now:%m-%d}/${now:%H-%M-%S}
 
-name: autodl_b16_h128_e32_5e9_teacher_batch16
+name: autodl_b16_h128_e32_5e9_teacher_batch16_0431775488
 
 ## WANDB params
 # The wandb project name
@@ -15,7 +15,7 @@ project: threes-ai
 # The wandb user to log to
 entity: pyflynn
 # The wandb group for the run
-group: autodl_teacher_runs
+group: autodl_penality_merge_reward_runs
 
 ## ENV params
 obs_space_kwargs: {}
@@ -68,6 +68,8 @@ use_teacher: True
 #teacher_checkpoint_file: 1613443072_weights.pt
 teacher_load_dir: /root/autodl-tmp/outputs/11-27/23-28-57/
 teacher_checkpoint_file: 1182961664_weights.pt
+#teacher_load_dir: /Users/flynn.wang/repo/flynn/thress_imgs/models/move_model/autodl_b16_h128_e32_5e9_teacher_batch16_1130
+#teacher_checkpoint_file: 0431775488_weights.pt
 
 # MISCELLANEOUS params
 use_mixed_precision: True

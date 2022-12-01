@@ -41,7 +41,8 @@ def download_img(img_path):
   if r.status_code == 200:
     img_data = r.content
     with open(img_path, 'wb') as f:
-      shutil.copyfileobj(img_data, f)
+      f.write(img_data)
+      # shutil.copyfileobj(img_data, f)
     logging.info("Image downloaded: %s", img_path)
     return True
   logging.error("Failed to download image file!")
@@ -61,7 +62,7 @@ def on_img_received(flags):
   if handler is None:
     handler = StepHandler(flags)
 
-  direction = handler.execute(img_path)
+  direction = handler.execute(img_path, manual_fix=False)
   random_sound(direction)
 
 
