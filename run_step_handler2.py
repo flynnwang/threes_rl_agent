@@ -19,7 +19,8 @@ from threes_ai.threes.hanlder import StepHandler
 
 handler = None
 
-IMAGE_URL = "http://192.168.31.207:8000/board.jpg"
+# IMAGE_URL = "http://192.168.31.207:8000/board.jpg"
+IMAGE_URL = "http://169.254.112.56:8000/board.jpg"
 
 SOUND_DIR = "/Users/flynn.wang/repo/flynn/thress_imgs/move_sound"
 
@@ -62,8 +63,17 @@ def on_img_received(flags):
   if handler is None:
     handler = StepHandler(flags)
 
-  direction = handler.execute(img_path, manual_fix=False)
-  random_sound(direction)
+  manual_fix = False
+  while True:
+    direction = handler.execute(img_path, manual_fix=manual_fix)
+    random_sound(direction)
+    user_cmd = input("wait for user input (or leave it empty to move):")
+    if user_cmd.strip() == "":
+      handler.move(direction)
+      break
+
+    handler.game = None
+    manual_fix = True
 
 
 @hydra.main(config_path="conf", config_name="step_handler_config")
@@ -84,7 +94,6 @@ def main(flags: DictConfig):
     logging.info(resp)
 
     on_img_received(flags)
-    input("wait for moving...")
 
 
 if __name__ == "__main__":
