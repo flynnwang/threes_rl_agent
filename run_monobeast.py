@@ -90,6 +90,7 @@ def main(flags: DictConfig):
         entity=flags.entity,
         group=flags.group,
         name=flags.name,
+        id=flags.run_id,
     )
 
   flags = flags_to_namespace(OmegaConf.to_container(flags))

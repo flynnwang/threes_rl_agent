@@ -8,6 +8,7 @@ hydra:
     #dir: ./outputs/${now:%m-%d}/${now:%H-%M-%S}
 
 name: autodl_b32_h128_e128_5e9_teacher_batch16_kernel3
+run_id: 20ovj7hu
 # teacher: autodl_b16_h128_e32_5e9_teacher_batch16
 
 ## WANDB params
