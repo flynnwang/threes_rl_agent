@@ -225,11 +225,13 @@ class BonusCards:
     assert self.is_active()
 
     cards = self.get_active_bonus_cards()
-    n = min(len(cards), MAX_CANDIDATE_CARDS_NUM)
+    if len(cards) < MAX_CANDIDATE_CARDS_NUM:
+      return cards
 
-    candidate_cards = random.sample(cards, n)
-    candidate_cards.sort()
-    return candidate_cards
+    # drop first and last card then sample 1 card.
+    cards = cards[1:-1]
+    center_card = random.choice(cards)
+    return [center_card // 2, center_card, center_card * 2]
 
 
 class NextCard:
