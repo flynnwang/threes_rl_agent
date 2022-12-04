@@ -80,6 +80,7 @@ class ThreesEnv(gym.Env):
 
   def reset(self, seed=None):
     seed = seed or self._seed
+    random.seed(seed)
     super().reset(seed=seed)
 
     self.game = ThreesGame()
