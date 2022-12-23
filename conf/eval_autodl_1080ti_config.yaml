@@ -6,7 +6,7 @@ hydra:
   run:
     dir: ./outputs/${now:%m-%d}/${now:%H-%M-%S}
 
-name: eval_b24_h128_e32_5e9_teacher_1127_1182961664
+name: eval_b128_h128_e128_5e9_teacher_batch16_kernel3_cont_05357895680
 
 ## WANDB params
 # The wandb project name
@@ -26,9 +26,9 @@ batch_size: 32
 
 ## MODEL params
 model_arch: conv_model
-n_blocks: 24
+n_blocks: 64
 hidden_dim: 128
-embedding_dim: 32
+embedding_dim: 128
 n_merge_layers: 1
 normalize: False
 sum_player_embeddings: False
@@ -61,8 +61,34 @@ debug: False
 #checkpoint_file: 0638299392_weights.pt
 #
 
-load_dir: /Users/flynn.wang/repo/flynn/thress_imgs/models/move_model/autodl_b24_h128_e32_5e9_teacher_1127
-checkpoint_file: 1182961664_weights.pt
+#load_dir: /Users/flynn.wang/repo/flynn/thress_imgs/models/move_model/autodl_b24_h128_e32_5e9_teacher_1127
+#checkpoint_file: 1182961664_weights.pt
+#
+#
+#load_dir: /Users/flynn.wang/repo/flynn/thress_imgs/models/move_model/autodl_b32_h128_e128_5e9_teacher_batch16_kernel3_cont
+#checkpoint_file: 1386145792_weights.pt
+#checkpoint_file: 1551808512_weights.pt
+#checkpoint_file: 1736534016_weights.pt
+#
+#
+load_dir: /Users/flynn.wang/repo/flynn/thress_imgs/models/move_model/autodl_b64_h128_e128_5e9_teacher_batch16_kernel3_cont/
+#checkpoint_file: 0654143488_weights.pt
+#checkpoint_file: 0999673856_weights.pt
+#checkpoint_file: 1201274880_weights.pt
+#checkpoint_file: 1437231104_weights.pt
+#checkpoint_file: 1580019712_weights.pt
+#checkpoint_file: 1733597184_weights.pt
+#checkpoint_file: 1960538112_weights.pt
+#checkpoint_file: 2326396928_weights.pt
+#checkpoint_file: 2754355200_weights.pt
+#checkpoint_file: 3054837760_weights.pt
+#checkpoint_file: 3393871872_weights.pt
+#checkpoint_file: 3771570176_weights.pt
+#checkpoint_file: 4119496704_weights.pt
+#checkpoint_file: 4449751040_weights.pt
+#checkpoint_file: 4855656448_weights.pt
+#checkpoint_file: 05039099904_weights.pt
+checkpoint_file: 05357895680_weights.pt
 #
 weights_only: False
 n_value_warmup_batches: 0

@@ -8,7 +8,6 @@ import timeit
 import pprint
 from multiprocessing import Manager
 
-
 import hydra
 from omegaconf import OmegaConf, DictConfig
 from pathlib import Path
@@ -20,8 +19,6 @@ from threes_ai.torchbeast.core import prof
 from threes_ai.utils import flags_to_namespace
 from threes_ai.model import create_model
 from threes_ai.thress_gym import create_env, create_game_env
-
-
 
 os.environ["OMP_NUM_THREADS"] = "1"
 
@@ -39,9 +36,12 @@ def do_evaluation(flags, total_games_played, stats, infos):
       max_card = str(max_card)
       max_card_count = stats.get(max_card, 0) + 1
       total_games_played += 1
-
       stats[max_card] = max_card_count
-      stats[f'card_{max_card}_pct'] = max_card_count / total_games_played
+
+  for key, v in list(stats.items()):
+    if key.startswith('card'):
+      continue
+    stats[f'card_{key}_pct'] = v / total_games_played
   return stats, total_games_played
 
 
@@ -96,7 +96,6 @@ def act(
           card_sum = env_output["info"]["card_sum"][done == True]
           game_step_count = env_output["info"]["game_step_count"][done == True]
 
-
           result.append({
               'max_card': max_card.tolist(),
               'card_sum': card_sum.tolist(),
@@ -127,8 +126,7 @@ def evaluate(flags):
   manager = Manager()
   # buffers = manager.list()
   # for _ in range(flags.num_buffers):
-    # buffers.append(None)
-
+  # buffers.append(None)
 
   assert flags.load_dir
   logging.info("Loading checkpoint state...")
@@ -139,7 +137,6 @@ def evaluate(flags):
 
   t = flags.unroll_length
   b = flags.batch_size
-
 
   game_env = create_game_env()
   actor_model = create_model(flags, game_env, flags.actor_device)
@@ -190,6 +187,8 @@ def evaluate(flags):
         )
       except Exception as e:
         __import__('ipdb').set_trace()
+        raise e
+
       with lock:
         step += t * b
         print(step, sorted(list(stats.items())), total_games_played)
@@ -217,7 +216,7 @@ def evaluate(flags):
       sps = (step - start_step) / (timer() - start_time)
       bps = (step - start_step) / (t * b) / (timer() - start_time)
       # logging.info(
-          # f"Steps {step:d} @ {sps:.1f} SPS / {bps:.1f} BPS. Stats:\n{pprint.pformat(stats)}"
+      # f"Steps {step:d} @ {sps:.1f} SPS / {bps:.1f} BPS. Stats:\n{pprint.pformat(stats)}"
       # )
   except KeyboardInterrupt:
     # Try checkpointing and joining actors then quit.
