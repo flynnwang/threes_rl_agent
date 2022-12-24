@@ -75,7 +75,7 @@ class StepHandler:
     env = create_test_env(game, self.flags.actor_device)
     env_output = env.reset(force=True)
     agent_output = self.actor_model(env_output, sample=False)
-    return agent_output["actions"][0]
+    return agent_output["actions"][0], agent_output["baseline"][0]
 
   def wait_user_input(self, candi_cards, board):
 
@@ -129,9 +129,10 @@ class StepHandler:
       self.game = ThreesGame(board, next_card)
       self.game.display(start_pos=pos)
 
-    action = self.step(self.game)
+    action, baseline = self.step(self.game)
     direction = ACTION_TO_DIRECTION[int(action)]
-    logging.info(f"action: {int(action)}, move={direction}")
+    logging.info(f"action: {int(action)} move={direction}")
+    logging.info(f"baseline: {float(baseline):.3f}")
     return direction
 
   def move(self, direction):

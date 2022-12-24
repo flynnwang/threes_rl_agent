@@ -63,5 +63,7 @@ test_img_path: /Users/flynn.wang/repo/flynn/thress_imgs/record_1112/002daf8e-c2a
 
 manual_fix_path: /Users/flynn.wang/repo/flynn/thress_imgs/fix.txt
 
-save_img_path: /Users/flynn.wang/repo/flynn/thress_imgs/record_1220
-digit_model_ck_path: /Users/flynn.wang/repo/flynn/thress_imgs/models/digit_model/predict_num_v1129_v0.pt
+save_img_path: /Users/flynn.wang/repo/flynn/thress_imgs/record_1223
+#digit_model_ck_path: /Users/flynn.wang/repo/flynn/thress_imgs/models/digit_model/predict_num_v1129_v0.pt
+#digit_model_ck_path: /Users/flynn.wang/repo/flynn/thress_imgs/models/digit_model/predict_num_v1223.pt
+digit_model_ck_path: /Users/flynn.wang/repo/flynn/thress_imgs/models/digit_model/predict_num_v1224.pt

@@ -317,7 +317,12 @@ class ThreesGame:
     for i in range(BOARD_SIZE):
       for j in range(BOARD_SIZE):
         c = self.board.cells[i][j]
+        is_new_card = start_pos and (i, j) == start_pos
 
+        if is_new_card:
+          print('[', end='')
+
+        # print card
         card_str = ""
         if c.has_card():
           card_str = fmt.format(c.card)
@@ -325,8 +330,8 @@ class ThreesGame:
           card_str = '_' * width
         print(card_str, end='')
 
-        if start_pos and (i, j) == start_pos:
-          print('* ', end='')
+        if is_new_card:
+          print(']', end='')
         else:
           print('  ', end='')
       print()
