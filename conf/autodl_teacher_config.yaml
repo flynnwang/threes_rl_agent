@@ -7,8 +7,8 @@ hydra:
     dir: /root/autodl-tmp/outputs/${now:%m-%d}/${now:%H-%M-%S}
     #dir: ./outputs/${now:%m-%d}/${now:%H-%M-%S}
 
-name: autodl_b32_h128_e128_1e10_teacher_batch16_kernel3
-run_id: 20ovj7hu
+name: autodl_b32_h128_e128_1e10_teacher_batch16_k3_1225
+#run_id: 20ovj7hu
 # teacher: autodl_b16_h128_e32_5e9_teacher_batch16
 
 ## WANDB params
@@ -25,8 +25,9 @@ reward_space_kwargs: {}
 
 ## TRAINING params
 total_steps: 1e10
-num_actors: 12
-n_actor_envs: 256
+num_actors: 13
+total_steps: 10e9
+n_actor_envs: 128
 unroll_length: 16
 batch_size: 128
 discounting: 0.999
@@ -74,8 +75,15 @@ use_teacher: True
 #teacher_load_dir: /root/autodl-tmp/outputs/11-27/23-28-57/
 #teacher_checkpoint_file: 1182961664_weights.pt
 #
-teacher_load_dir: /root/autodl-tmp/outputs/11-29/14-37-29/
-teacher_checkpoint_file: 0682200320_weights.pt
+#teacher_load_dir: /root/autodl-tmp/outputs/11-29/14-37-29/
+#teacher_checkpoint_file: 0682200320_weights.pt
+#
+#teacher_load_dir: /root/autodl-tmp/outputs/12-03/20-34-34
+teacher_load_dir: /root/autodl-nas/snapshot/autodl_b32_h128_e128_5e9_teacher_batch16_kernel3_cont
+teacher_checkpoint_file: 1790685184_weights.pt
+#
+#teacher_load_dir: /root/autodl-tmp/outputs/12-03/20-34-34
+#teacher_checkpoint_file: 1790685184_weights.pt
 
 # MISCELLANEOUS params
 use_mixed_precision: True
@@ -83,15 +91,27 @@ actor_device: cuda
 learner_device: cuda
 #actor_device: cpu
 #learner_device: cpu
-model_log_freq: 100
+model_log_freq: 300
 # file_descriptor or file_system
 sharing_strategy: file_system
 disable_wandb: False
 #disable_wandb: True
 debug: False
 
-#load_dir:
-#checkpoint_file:
+# restart config
+#load_dir: /root/autodl-tmp/outputs/12-02/14-10-50
+#checkpoint_file: 0692463616.pt
+
+#load_dir: /root/autodl-tmp/outputs/12-04/23-08-20
+#checkpoint_file: 0331423744.pt
+#checkpoint_file: 0331423744.pt
+#
+#load_dir: /root/autodl-tmp/outputs/12-05/22-27-22
+#checkpoint_file: 2539980800.pt
+#
+#load_dir: /root/autodl-tmp/outputs/12-12/09-02-42/
+load_dir: /root/autodl-nas/snapshot/autodl_b64_h128_e128_5e9_teacher_batch16_kernel3_cont
+checkpoint_file: 4855656448.pt
 
 weights_only: False
 n_value_warmup_batches: 0

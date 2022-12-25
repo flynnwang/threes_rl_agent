@@ -24,8 +24,8 @@ from tqdm import tqdm
 # DATA_DIR = '/Users/flynn.wang/repo/flynn/thress_imgs/record_1124_target'
 # CHECKPOINT_PATH = "/Users/flynn.wang/repo/flynn/thress_imgs/models/predict_num_v1129_v0.pt"
 
-DATA_DIR = '/root/autodl-tmp/data/digits_1129'
-CHECKPOINT_PATH = "/root/autodl-tmp/data/digits_1129/predict_num_v1129_v0.pt"
+DATA_DIR = '/root/autodl-tmp/data/digits_1220/record_1220_target'
+CHECKPOINT_PATH = "/root/autodl-tmp/data/digits_1220/record_1220_target/predict_num_v1224.pt"
 
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 # device = "cpu"
