@@ -7,7 +7,7 @@ hydra:
     dir: /root/autodl-tmp/outputs/${now:%m-%d}/${now:%H-%M-%S}
     #dir: ./outputs/${now:%m-%d}/${now:%H-%M-%S}
 
-name: autodl_b32_h128_e128_5e9_teacher_batch16_kernel3
+name: autodl_b32_h128_e128_1e10_teacher_batch16_kernel3
 run_id: 20ovj7hu
 # teacher: autodl_b16_h128_e32_5e9_teacher_batch16
 
@@ -24,7 +24,7 @@ obs_space_kwargs: {}
 reward_space_kwargs: {}
 
 ## TRAINING params
-total_steps: 5e9
+total_steps: 1e10
 num_actors: 12
 n_actor_envs: 256
 unroll_length: 16

@@ -28,7 +28,7 @@ class Cell:
     if self.empty():
       return True
     s = c1.card + self.card
-    return s == 3 or (c1.card == self.card and 6 <= s <= THE_MAX_CARD)
+    return s == 3 or (c1.card == self.card and 6 <= s <= THE_MAX_CARD * 2)
 
   def merge(self, c1):
     assert c1.has_card()
@@ -280,7 +280,8 @@ class ThreesGame:
 
   def done(self):
     """Game is over if all four move directions are dead."""
-    return len(self.get_available_moves()) == 0
+    return (len(self.get_available_moves()) == 0
+            or self.board.max_card() == THE_MAX_CARD * 2)
 
   def peek(self):
     return self.board, self.next_card.peek()

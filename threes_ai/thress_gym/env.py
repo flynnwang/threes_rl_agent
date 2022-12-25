@@ -123,6 +123,9 @@ class ThreesEnv(gym.Env):
     merge_sum = self.game.board.merge_sum
     reward = reward_score(merge_sum) if merge_sum > 0 else 0
 
+    if terminated and self.game.board.max_card() != THE_MAX_CARD * 2:
+      reward -= 5
+
     # empty_before = (16 - num_card_before_moving)
     # empty_after = (16 - num_card_after_moving)
     # num_lost_cells = (empty_before - empty_after)
