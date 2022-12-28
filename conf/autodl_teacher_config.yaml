@@ -7,7 +7,7 @@ hydra:
     dir: /root/autodl-tmp/outputs/${now:%m-%d}/${now:%H-%M-%S}
     #dir: ./outputs/${now:%m-%d}/${now:%H-%M-%S}
 
-name: autodl_b32_h128_e128_1e10_teacher_batch16_k3_1225
+name: autodl_b32_h128_e128_1e10_teacher_batch16_k3_1225_cont
 #run_id: 20ovj7hu
 # teacher: autodl_b16_h128_e32_5e9_teacher_batch16
 
@@ -26,7 +26,7 @@ reward_space_kwargs: {}
 ## TRAINING params
 total_steps: 1e10
 num_actors: 14
-n_actor_envs: 384
+n_actor_envs: 256
 unroll_length: 16
 batch_size: 128
 discounting: 0.999
@@ -111,6 +111,9 @@ debug: False
 #load_dir: /root/autodl-tmp/outputs/12-12/09-02-42/
 #load_dir: /root/autodl-nas/snapshot/autodl_b64_h128_e128_5e9_teacher_batch16_kernel3_cont
 #checkpoint_file: 4855656448.pt
+#
+load_dir: /root/autodl-tmp/outputs/12-25/21-03-39
+checkpoint_file: 01246488576.pt
 
 weights_only: False
 n_value_warmup_batches: 0
