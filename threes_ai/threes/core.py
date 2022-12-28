@@ -297,7 +297,7 @@ class ThreesGame:
   def done(self):
     """Game is over if all four move directions are dead."""
     return (len(self.get_available_moves()) == 0
-            or self.board.has_nearby_6144s())
+            or self.board.max_card() == THE_MAX_CARD)
 
   def peek(self):
     return self.board, self.next_card.peek()
