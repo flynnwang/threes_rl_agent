@@ -25,9 +25,8 @@ reward_space_kwargs: {}
 
 ## TRAINING params
 total_steps: 1e10
-num_actors: 13
-total_steps: 10e9
-n_actor_envs: 128
+num_actors: 14
+n_actor_envs: 384
 unroll_length: 16
 batch_size: 128
 discounting: 0.999
@@ -78,12 +77,12 @@ use_teacher: True
 #teacher_load_dir: /root/autodl-tmp/outputs/11-29/14-37-29/
 #teacher_checkpoint_file: 0682200320_weights.pt
 #
-#teacher_load_dir: /root/autodl-tmp/outputs/12-03/20-34-34
-teacher_load_dir: /root/autodl-nas/snapshot/autodl_b32_h128_e128_5e9_teacher_batch16_kernel3_cont
-teacher_checkpoint_file: 1790685184_weights.pt
-#
-#teacher_load_dir: /root/autodl-tmp/outputs/12-03/20-34-34
+#teacher_load_dir: /root/autodl-nas/snapshot/autodl_b32_h128_e128_5e9_teacher_batch16_kernel3_cont
 #teacher_checkpoint_file: 1790685184_weights.pt
+
+#
+teacher_load_dir: /root/autodl-nas/snapshot/autodl_b64_h128_e128_5e9_teacher_batch16_kernel3_cont
+teacher_checkpoint_file: 4855656448_weights.pt
 
 # MISCELLANEOUS params
 use_mixed_precision: True
@@ -110,8 +109,8 @@ debug: False
 #checkpoint_file: 2539980800.pt
 #
 #load_dir: /root/autodl-tmp/outputs/12-12/09-02-42/
-load_dir: /root/autodl-nas/snapshot/autodl_b64_h128_e128_5e9_teacher_batch16_kernel3_cont
-checkpoint_file: 4855656448.pt
+#load_dir: /root/autodl-nas/snapshot/autodl_b64_h128_e128_5e9_teacher_batch16_kernel3_cont
+#checkpoint_file: 4855656448.pt
 
 weights_only: False
 n_value_warmup_batches: 0
