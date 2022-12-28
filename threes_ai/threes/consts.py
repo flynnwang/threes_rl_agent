@@ -4,7 +4,7 @@ BOARD_SIZE = 4
 
 MAX_CANDIDATE_CARDS_NUM = 3
 
-N_WHITE_CARD = 13
+N_WHITE_CARD = 12
 
 # Total number of cards + an empty card
 CARDS = [0, 1, 2] + [3 * (2**i) for i in range(N_WHITE_CARD)]

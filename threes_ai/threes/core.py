@@ -129,6 +129,22 @@ class Board:
           card = max(card, self.cells[i][j].card)
     return card
 
+  def has_nearby_6144s(self):
+    for i in range(BOARD_SIZE - 1):
+      for j in range(BOARD_SIZE - 1):
+        c = self.cells[i][j]
+        if c.card != THE_MAX_CARD:
+          continue
+
+        c1 = self.cells[i][j + 1]
+        if c1.card == THE_MAX_CARD:
+          return True
+
+        c2 = self.cells[i + 1][j]
+        if c2.card == THE_MAX_CARD:
+          return True
+    return False
+
   def get_info(self):
     mx_card = -1
     num_card = 0
@@ -281,7 +297,7 @@ class ThreesGame:
   def done(self):
     """Game is over if all four move directions are dead."""
     return (len(self.get_available_moves()) == 0
-            or self.board.max_card() == THE_MAX_CARD)
+            or self.board.has_nearby_6144s())
 
   def peek(self):
     return self.board, self.next_card.peek()
