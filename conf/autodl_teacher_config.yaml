@@ -121,8 +121,11 @@ debug: False
 #load_dir: /root/autodl-tmp/outputs/12-25/21-03-39
 #checkpoint_file: 01246488576.pt
 
-load_dir: /root/autodl-nas/snapshot/autodl_b32_h128_e128_1e10_teacher_batch16_k3_half_max_card_penalty_1229_v2
-checkpoint_file: 00294414336.pt
+#load_dir: /root/autodl-nas/snapshot/autodl_b32_h128_e128_1e10_teacher_batch16_k3_half_max_card_penalty_1229_v2
+#checkpoint_file: 00294414336.pt
+#
+load_dir: /root/autodl-nas/snapshot/autodl_b32_h128_e128_1e10_teacher_batch16_k3_min_1536/
+checkpoint_file: 00813164544.pt
 
 weights_only: False
 n_value_warmup_batches: 600
