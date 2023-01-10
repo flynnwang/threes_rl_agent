@@ -118,21 +118,22 @@ class ThreesEnv(gym.Env):
     # reward /= 500.0  # Given that we're targeting this max score
 
     # TARGET_CARD = 1536
-    TARGET_CARD = 3072
+    TARGET_CARD = 6144
     def reward_score(r):
-      if r < TARGET_CARD:
-        return 0
+      # if r < TARGET_CARD:
+        # return 0
       return (r / TARGET_CARD)
 
     merge_sum = self.game.board.merge_sum
     reward = reward_score(merge_sum) if merge_sum > 0 else 0
 
-    max_card = self.game.board.max_card()
-    if terminated and max_card < THE_MAX_CARD:
-      if max_card < TARGET_CARD:
-        reward -= 1
-      else:
-        reward -= reward_score(self.game.board.max_card()) / 2
+    # max_card = self.game.board.max_card()
+    # if terminated and max_card < THE_MAX_CARD:
+      # reward -= reward_score(self.game.board.max_card()) / 2
+      # if max_card < TARGET_CARD:
+        # reward -= 1
+      # else:
+        # reward -= reward_score(self.game.board.max_card()) / 2
 
     # empty_before = (16 - num_card_before_moving)
     # empty_after = (16 - num_card_after_moving)

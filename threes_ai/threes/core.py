@@ -319,8 +319,13 @@ class ThreesGame:
     positions = [(i, j) for i in range(BOARD_SIZE) for j in range(BOARD_SIZE)]
     positions = random.sample(positions, INITIAL_CARD_NUM)
 
-    for i, j in positions:
+    add_6144 = True
+    for idx, (i, j) in enumerate(positions):
       card = self.next_card.next()
+
+      # adding a 6144 to make a harder game.
+      if idx == 0 and add_6144:
+        card = 6144
       self.board.put(i, j, card)
 
   def display(self, start_pos=None):
