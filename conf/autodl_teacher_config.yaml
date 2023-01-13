@@ -7,7 +7,7 @@ hydra:
     dir: /root/autodl-tmp/outputs/${now:%m-%d}/${now:%H-%M-%S}
     #dir: ./outputs/${now:%m-%d}/${now:%H-%M-%S}
 
-name: autodl_b32_h128_e128_1e10_teacher_batch16_k3_6144_start
+name: autodl_b32_h128_e128_1e10_teacher_batch16_k3_6144_and_3072
 #run_id: 20ovj7hu
 # teacher: autodl_b16_h128_e32_5e9_teacher_batch16
 
@@ -129,6 +129,9 @@ debug: False
 #
 #load_dir: /root/autodl-nas/snapshot/autodl_b32_h128_e128_1e10_teacher_batch16_k3_min_1536/
 #checkpoint_file: 00813164544.pt
+#
+load_dir: /root/autodl-nas/snapshot/autodl_b32_h128_e128_1e10_teacher_batch16_k3_6144_start
+checkpoint_file: 01477025792.pt
 
 weights_only: False
 n_value_warmup_batches: 0
