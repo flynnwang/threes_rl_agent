@@ -7,7 +7,8 @@ hydra:
     dir: /root/autodl-tmp/outputs/${now:%m-%d}/${now:%H-%M-%S}
     #dir: ./outputs/${now:%m-%d}/${now:%H-%M-%S}
 
-name: autodl_b128_h128_e128_1e10_TEA_k4_6144_and_3072_v3
+#name: autodl_b128_h128_e128_1e10_TEA_k4_6144_and_3072_v3
+name: autodl_b32_h128_e128_1e10_TEA_k4_6144_and_3072_v3
 #run_id: 20ovj7hu
 # teacher: autodl_b16_h128_e32_5e9_teacher_batch16
 
@@ -24,8 +25,8 @@ obs_space_kwargs: {}
 reward_space_kwargs: {}
 
 ## TRAINING params
-total_steps: 1e10
-num_actors: 12
+total_steps: 2e10
+num_actors: 14
 n_actor_envs: 128
 unroll_length: 16
 batch_size: 128
@@ -33,7 +34,7 @@ discounting: 0.999
 
 ## MODEL params
 model_arch: conv_model
-n_blocks: 128
+n_blocks: 32
 hidden_dim: 128
 embedding_dim: 128
 n_merge_layers: 1
@@ -100,8 +101,7 @@ use_teacher: True
 #teacher_checkpoint_file: 09472583680.pt
 #
 teacher_load_dir: /root/autodl-nas/snapshot/autodl_b32_h128_e128_1e10_teacher_batch16_k3_6144_and_3072_v2
-teacher_checkpoint_file: 06500057088_weights.pt
-
+teacher_checkpoint_file: 08237240320_weights.pt
 
 # MISCELLANEOUS params
 use_mixed_precision: True
@@ -109,7 +109,7 @@ actor_device: cuda
 learner_device: cuda
 #actor_device: cpu
 #learner_device: cpu
-model_log_freq: 500
+model_log_freq: 100
 
 # in minutes
 checkpoint_freq: 60
@@ -151,6 +151,10 @@ debug: False
 
 #load_dir: /root/autodl-nas/snapshot/autodl_b32_h128_e128_1e10_teacher_batch16_k3_6144_and_3072_v2
 #checkpoint_file: 00772114432.pt
+#
+load_dir: /root/autodl-nas/snapshot/autodl_b32_h128_e128_1e10_teacher_batch16_k3_6144_and_3072_v2
+#checkpoint_file: 06500057088.pt
+checkpoint_file: 08536166400.pt
 
 weights_only: False
 n_value_warmup_batches: 0
